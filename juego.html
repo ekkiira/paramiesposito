@@ -381,12 +381,12 @@
         function platformsMoviles_reset() {
             plataformasMoviles = [];
             if (nivel === 3 || nivel === 5) {
-                // Colocar una plataforma grande justo debajo del conejito al iniciar el nivel 3 y 5
+                // Posicionar al conejito y una plataforma gigante segura justo debajo desde el frame 0
                 conejo.x = 100;
-                conejo.y = 240;
+                conejo.y = 230;
                 conejo.vy = 0;
                 conejo.enSuelo = true;
-                plataformasMoviles.push({ x: 50, y: 325, width: 300, height: 22 });
+                plataformasMoviles.push({ x: 50, y: 315, width: 450, height: 25 });
             } else {
                 conejo.x = 100;
                 conejo.y = (nivel === 1 || nivel === 4) ? 220 : 300;
@@ -492,7 +492,7 @@
                         conejo.x + conejo.width - 25 > plat.x &&
                         conejo.x + 25 < plat.x + plat.width &&
                         conejo.y + conejo.height >= plat.y &&
-                        conejo.y + conejo.height <= plat.y + 20 &&
+                        conejo.y + conejo.height <= plat.y + 25 &&
                         conejo.vy >= 0
                     ) {
                         conejo.y = plat.y - conejo.height;
