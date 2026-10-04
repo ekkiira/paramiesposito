@@ -15,6 +15,7 @@
             height: 100vh;
             width: 100vw;
             overflow: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         #game-container {
             position: relative;
@@ -36,28 +37,46 @@
             top: 25px;
             left: 35px;
             color: white;
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
         }
-        #btn-pausa {
+        #mensaje-romantico {
+            position: absolute;
+            top: 75px;
+            left: 35px;
+            color: #ffb6c1;
+            font-size: 22px;
+            font-weight: bold;
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
+            z-index: 5;
+            transition: opacity 0.5s ease;
+        }
+        .controles-superiores {
             position: absolute;
             top: 22px;
             right: 35px;
+            display: flex;
+            gap: 12px;
+            z-index: 6;
+        }
+        .btn-top {
             background-color: rgba(255, 182, 193, 0.85);
             color: white;
             border: 2px solid white;
-            padding: 10px 20px;
-            font-size: 20px;
-            border-radius: 25px;
+            padding: 8px 18px;
+            font-size: 18px;
+            border-radius: 20px;
             cursor: pointer;
             font-weight: bold;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
-            z-index: 6;
+            text-decoration: none;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
         }
-        #btn-pausa:hover {
+        .btn-top:hover {
             background-color: #ff69b4;
             transform: scale(1.05);
         }
@@ -77,11 +96,11 @@
             z-index: 10;
         }
         .overlay img {
-            width: 180px;
-            height: 180px;
+            width: 160px;
+            height: 160px;
             object-fit: cover;
             border-radius: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.7);
             border: 3px solid #ffb6c1;
         }
@@ -92,30 +111,41 @@
             background-color: #ffb6c1;
             color: white;
             border: none;
-            padding: 14px 32px;
-            font-size: 20px;
-            border-radius: 35px;
+            padding: 12px 28px;
+            font-size: 18px;
+            border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 12px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             text-decoration: none;
             transition: 0.2s;
+            display: inline-block;
         }
         .btn:hover {
             background-color: #ff69b4;
             transform: scale(1.08);
+        }
+        .btn-secundario {
+            background-color: rgba(135, 206, 235, 0.8);
+        }
+        .btn-secundario:hover {
+            background-color: #4682b4;
         }
     </style>
 </head>
 <body>
 
     <div id="game-container">
-        <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
+        <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Corazones: <span id="txt-puntos">0</span>/100</div>
+        <div id="mensaje-romantico">¡Mi conejito! 🐰💖</div>
         
-        <button id="btn-pausa" onclick="alternarPausa()">⏸ Pausa</button>
+        <div class="controles-superiores">
+            <a href="index.html" class="btn-top">🏠 Menú</a>
+            <button class="btn-top" onclick="alternarPausa()" id="btn-pausa">⏸ Pausa</button>
+        </div>
 
-        <canvas id="gameCanvas" width="800" height="450"></canvas>
+        <canvas id="gameCanvas" width="900" height="500"></canvas>
 
         <!-- Audio de fondo -->
         <audio id="musicaFondo" src="musica.mp3" preload="auto" loop></audio>
@@ -123,24 +153,32 @@
         <!-- Pantalla de Pausa -->
         <div id="pantalla-pausa" class="overlay hidden">
             <h2>Juego Pausado ⏸</h2>
-            <p style="font-size: 20px; margin-bottom: 20px;">Tómate un respiro, mi amor.</p>
+            <p style="font-size: 20px; margin-bottom: 15px;">Tómate un respiro, mi amor.</p>
             <button class="btn" onclick="alternarPausa()">Reanudar ▶</button>
+            <br>
+            <a href="index.html" class="btn btn-secundario">Volver al Menú 🏠</a>
         </div>
 
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="overlay hidden">
             <img src="pantalladeperdiste.jpg" alt="Perdiste">
             <h2>¡Casi, mi amor! El conejito tropezó 🥺</h2>
-            <p style="font-size: 20px;">¡Vuelve a intentarlo!</p>
-            <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
+            <p style="font-size: 18px; margin-bottom: 10px;">¡No te por vencido, mi vida!</p>
+            <div>
+                <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
+                <a href="index.html" class="btn btn-secundario" style="margin-left: 10px;">Volver al Menú 🏠</a>
+            </div>
         </div>
 
         <!-- Pantalla de Victoria -->
         <div id="pantalla-victoria" class="overlay hidden">
             <img src="ganadordenivel.png" onerror="this.onerror=null; this.src='ganadordenivel.jpg';" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
-            <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo, mi vida!</p>
-            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡</button>
+            <p id="texto-victoria" style="font-size: 20px; margin-bottom: 10px;">¡Excelente trabajo, mi vida!</p>
+            <div>
+                <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡</button>
+                <a href="index.html" class="btn btn-secundario" style="margin-left: 10px;">Volver al Menú 🏠</a>
+            </div>
         </div>
     </div>
 
@@ -151,42 +189,47 @@
         ctx.imageSmoothingQuality = 'high';
 
         const imgConejo = new Image(); imgConejo.src = "conejitocorriendo.png";
-        const fondoDia = new Image(); fondoDia.src = "fondodia.jpg";
-        const fondoNoche = new Image(); fondoNoche.src = "fondonoche.jpg";
         const musica = document.getElementById("musicaFondo");
 
         let nivel = 1;
         let puntos = 0;
         let juegoActivo = false;
         let estaPausado = false;
-        let tiempoCiclo = 0;
+        let contadorFrames = 0;
 
         let conejo = {
             x: 100, 
-            y: 280, 
-            width: 100,   
-            height: 100,  
+            y: 300, 
+            width: 85, 
+            height: 85, 
             vy: 0, 
-            gravedad: 0.65,       // Gravedad un poco más firme para saltos ágiles
-            fuerzaSalto: -12.5,   // Salto más responsivo
-            suelo: 280,  
+            gravedad: 0.6, 
+            fuerzaSalto: -11.5, 
+            suelo: 340, 
             enSuelo: false
         };
 
-        let zanahorias = []; 
-        let obstaculos = []; 
-        let contadorFrames = 0;
+        let elementos = []; // Corazones o coleccionables
+        let obstaculos = []; // Tubos, rocas, espinas o plataformas
+        let plataformasMoviles = []; // Para nivel 3 y 5
 
-        function intentarReproducirMusica() {
-            if (musica.paused && juegoActivo && !estaPausado) {
-                musica.volume = 0.4;
-                musica.play().catch(e => {});
-            }
+        const mensajesAmor = [
+            "¡Mi conejito! 🐰💖",
+            "¡Muy bien mi amor! ✨",
+            "¡Eres el mejor! 💙",
+            "¡Qué tierno lo haces! 🌸",
+            "¡Te amo con todo mi corazón! 💌"
+        ];
+
+        function cambiarMensajeRomantico() {
+            const el = document.getElementById("mensaje-romantico");
+            const randomMsg = mensajesAmor[Math.floor(Math.random() * mensajesAmor.length)];
+            el.innerText = randomMsg;
         }
 
         window.addEventListener("keydown", e => { 
             intentarReproducirMusica();
-            if (e.code === "Space") { 
+            if (e.code === "Space" || e.code === "ArrowUp") { 
                 e.preventDefault(); 
                 saltar(); 
             } else if (e.code === "KeyP" || e.code === "Escape") {
@@ -201,15 +244,22 @@
 
         function saltar() {
             if (!juegoActivo || estaPausado) return;
-            if (conejo.enSuelo) {
+            // Doble salto o salto normal según el nivel
+            if (conejo.enSuelo || nivel === 3 || nivel === 5) {
                 conejo.vy = conejo.fuerzaSalto;
                 conejo.enSuelo = false;
             }
         }
 
+        function intentarReproducirMusica() {
+            if (musica.paused && juegoActivo && !estaPausado) {
+                musica.volume = 0.4;
+                musica.play().catch(e => {});
+            }
+        }
+
         function alternarPausa() {
             if (!juegoActivo && !estaPausado) return; 
-
             estaPausado = !estaPausado;
             const pantallaPausa = document.getElementById("pantalla-pausa");
             const btnPausa = document.getElementById("btn-pausa");
@@ -233,13 +283,13 @@
 
         function cargarNivel() {
             puntos = 0;
-            tiempoCiclo = 0;
             actualizarHUD();
-            conejo.y = conejo.suelo;
+            conejo.y = 300;
             conejo.vy = 0;
             conejo.enSuelo = true;
-            zanahorias = [];
+            elementos = [];
             obstaculos = [];
+            plataformasMoviles = [];
             contadorFrames = 0;
 
             juegoActivo = true;
@@ -252,6 +302,7 @@
             musica.volume = 0.4;
             musica.play().catch(e => {});
             
+            cambiarMensajeRomantico();
             loop();
         }
 
@@ -276,11 +327,14 @@
         function actualizar() {
             if (!juegoActivo || estaPausado) return;
 
-            tiempoCiclo += 1/60; 
+            contadorFrames++;
+            let velocidadMundo = 5.5 + (nivel * 0.5);
 
+            // Gravedad y física del conejo
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
+            // Suelo base por defecto
             if (conejo.y >= conejo.suelo) {
                 conejo.y = conejo.suelo;
                 conejo.vy = 0;
@@ -289,103 +343,254 @@
                 conejo.enSuelo = false;
             }
 
-            // VELOCIDAD AUMENTADA: Mucho más dinámico y rápido desde el nivel 1
-            let velocidadMundo = 6.0 + (nivel * 0.7);
-            contadorFrames++;
-
-            if (contadorFrames % 75 === 0) {
-                let alturaZanahoria = Math.random() > 0.4 ? 310 : 200; 
-                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 18, valor: 20 });
-            }
-
-            if (contadorFrames % 110 === 0) {
-                obstaculos.push({ x: canvas.width + 50, y: 315, width: 35, height: 55 });
-            }
-
-            for (let i = zanahorias.length - 1; i >= 0; i--) {
-                zanahorias[i].x -= velocidadMundo;
-                
-                let dx = (conejo.x + conejo.width/2) - zanahorias[i].x;
-                let dy = (conejo.y + conejo.height/2) - zanahorias[i].y;
-                if (Math.hypot(dx, dy) < 55) {
-                    puntos += zanahorias[i].valor;
-                    zanahorias.splice(i, 1);
-                    actualizarHUD();
-
-                    if (puntos >= 100) {
-                        juegoActivo = false;
-                        musica.pause();
-                        if (nivel === 5) {
-                            document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️";
-                            document.getElementById("texto-victoria").innerText = "¡Eres el mejor, mi amor! ¡Vamos a los créditos!";
-                        } else {
-                            document.getElementById("titulo-victoria").innerText = `¡Nivel ${nivel} Superado! 🎉`;
-                            document.getElementById("texto-victoria").innerText = "¡Lo lograste, mi vida!";
-                        }
-                        document.getElementById("pantalla-victoria").classList.remove("hidden");
-                        return;
-                    }
-                } else if (zanahorias[i].x < -50) {
-                    zanahorias.splice(i, 1);
+            // --- LÓGICA SEGÚN EL NIVEL ---
+            if (nivel === 1) {
+                // NIVEL 1: Tipo Flappy Bird con tubos/obstáculos superiores e inferiores
+                if (contadorFrames % 100 === 0) {
+                    let alturaH = Math.floor(Math.random() * 150) + 70;
+                    obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
+                    obstaculos.push({ x: canvas.width, y: alturaH + 130, width: 50, height: canvas.height - (alturaH + 130), tipo: 'tubo_abajo' });
+                    
+                    // Corazón en el espacio del tubo
+                    elementos.push({ x: canvas.width + 15, y: alturaH + 65, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
+                }
+            } 
+            else if (nivel === 2) {
+                // NIVEL 2: Obstáculos terrestres nítidos y corazones flotantes
+                if (contadorFrames % 90 === 0) {
+                    obstaculos.push({ x: canvas.width, y: 345, width: 40, height: 45, tipo: 'roca' });
+                }
+                if (contadorFrames % 70 === 0) {
+                    elementos.push({ x: canvas.width, y: Math.random() > 0.4 ? 300 : 200, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
+                }
+            } 
+            else if (nivel === 3) {
+                // NIVEL 3: Subir plataformas evitando espinas en el suelo
+                if (contadorFrames % 120 === 0) {
+                    let pY = Math.floor(Math.random() * 120) + 200;
+                    plataformasMoviles.push({ x: canvas.width, y: pY, width: 130, height: 20 });
+                    elementos.push({ x: canvas.width + 45, y: pY - 30, radius: 18, tipo: 'rosa' });
+                }
+                // Espinas continuas abajo
+                if (contadorFrames % 150 === 0) {
+                    obstaculos.push({ x: canvas.width, y: 375, width: 60, height: 15, tipo: 'espinas' });
+                }
+            } 
+            else if (nivel === 4) {
+                // NIVEL 4 (Criterio): Lluvia de corazones veloces y obstáculos móviles rápidos
+                if (contadorFrames % 60 === 0) {
+                    elementos.push({ x: canvas.width, y: Math.floor(Math.random() * 250) + 100, radius: 18, tipo: 'azul' });
+                }
+                if (contadorFrames % 80 === 0) {
+                    obstaculos.push({ x: canvas.width, y: Math.random() > 0.5 ? 330 : 220, width: 45, height: 45, tipo: 'roca_flotante' });
+                }
+            } 
+            else if (nivel === 5) {
+                // NIVEL 5 (Criterio): Reto final con plataformas dinámicas, corazones dobles y estelas de obstáculos
+                if (contadorFrames % 90 === 0) {
+                    let pY = Math.floor(Math.random() * 140) + 180;
+                    plataformasMoviles.push({ x: canvas.width, y: pY, width: 110, height: 18 });
+                    elementos.push({ x: canvas.width + 35, y: pY - 30, radius: 18, tipo: 'rosa' });
+                    obstaculos.push({ x: canvas.width + 120, y: pY - 40, width: 30, height: 30, tipo: 'espinas' });
                 }
             }
 
+            // Colisiones con plataformas móviles (Niveles 3 y 5)
+            conejo.enSuelo = (nivel === 3 || nivel === 5) ? false : (conejo.y >= conejo.suelo);
+            if (nivel === 3 || nivel === 5) {
+                if (conejo.y >= conejo.suelo) {
+                    // Tocar el suelo base en nivel 3 y 5 es muerte instantánea por espinas
+                    derrotaJuego();
+                    return;
+                }
+                for (let plat of plataformasMoviles) {
+                    plat.x -= velocidadMundo;
+                    // Checar si el conejo cae sobre la plataforma
+                    if (
+                        conejo.x + conejo.width - 20 > plat.x &&
+                        conejo.x + 20 < plat.x + plat.width &&
+                        conejo.y + conejo.height >= plat.y &&
+                        conejo.y + conejo.height <= plat.y + 15 &&
+                        conejo.vy >= 0
+                    ) {
+                        conejo.y = plat.y - conejo.height;
+                        conejo.vy = 0;
+                        conejo.enSuelo = true;
+                    }
+                }
+            }
+
+            // Actualizar elementos (Corazones azules y rosas)
+            for (let i = elementos.length - 1; i >= 0; i--) {
+                elementos[i].x -= velocidadMundo;
+                let dx = (conejo.x + conejo.width/2) - elementos[i].x;
+                let dy = (conejo.y + conejo.height/2) - elementos[i].y;
+                
+                if (Math.hypot(dx, dy) < 45) {
+                    puntos += 10;
+                    elementos.splice(i, 1);
+                    actualizarHUD();
+                    
+                    if (puntos % 30 === 0) cambiarMensajeRomantico();
+
+                    if (puntos >= 100) {
+                        victoriaJuego();
+                        return;
+                    }
+                } else if (elementos[i].x < -50) {
+                    elementos.splice(i, 1);
+                }
+            }
+
+            // Actualizar obstáculos
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
+                // Colisión precisa
                 if (
-                    conejo.x + 22 < obstaculos[i].x + obstaculos[i].width &&
-                    conejo.x + conejo.width - 22 > obstaculos[i].x &&
-                    conejo.y + conejo.height > obstaculos[i].y + 15
+                    conejo.x + 18 < obstaculos[i].x + obstaculos[i].width &&
+                    conejo.x + conejo.width - 18 > obstaculos[i].x &&
+                    conejo.y + 15 < obstaculos[i].y + obstaculos[i].height &&
+                    conejo.y + conejo.height - 10 > obstaculos[i].y
                 ) {
-                    juegoActivo = false;
-                    musica.pause();
-                    document.getElementById("pantalla-derrota").classList.remove("hidden");
+                    derrotaJuego();
                     return;
                 }
 
-                if (obstaculos[i].x < -50) {
+                if (obstaculos[i].x < -60) {
                     obstaculos.splice(i, 1);
                 }
             }
         }
 
-        function dibujar() {
-            let cicloActual = Math.floor(tiempoCiclo / 20) % 2; 
-            let fondoActivo = (cicloActual === 0) ? fondoDia : fondoNoche;
-
-            if (fondoActivo.complete) {
-                ctx.drawImage(fondoActivo, 0, 0, canvas.width, canvas.height);
+        function victoriaJuego() {
+            juegoActivo = false;
+            musica.pause();
+            if (nivel === 5) {
+                document.getElementById("titulo-victoria").innerText = "¡Completaste toda la aventura! ❤️";
+                document.getElementById("texto-victoria").innerText = "¡Eres el amor de mi vida! ¡Vamos a los créditos!";
             } else {
-                ctx.fillStyle = (cicloActual === 0) ? "#87CEEB" : "#0d1b2a";
+                document.getElementById("titulo-victoria").innerText = `¡Nivel ${nivel} Superado! 🎉`;
+                document.getElementById("texto-victoria").innerText = "¡Lo lograste, mi conejito hermoso!";
+            }
+            document.getElementById("pantalla-victoria").classList.remove("hidden");
+        }
+
+        function derrotaJuego() {
+            juegoActivo = false;
+            musica.pause();
+            document.getElementById("pantalla-derrota").classList.remove("hidden");
+        }
+
+        function dibujar() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // --- FONDO CAMBIANTE DÍA / NOCHE / ATARDECER SEGÚN NIVEL ---
+            if (nivel === 1) {
+                // Día alegre
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, "#87CEEB");
+                grad.addColorStop(1, "#E0F6FF");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Sol
+                ctx.fillStyle = "#FFD700";
+                ctx.beginPath(); ctx.arc(750, 90, 45, 0, Math.PI*2); ctx.fill();
+            } else if (nivel === 2) {
+                // Noche romántica con estrellas
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, "#0b0b2b");
+                grad.addColorStop(1, "#1f1b4e");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                // Estrellas
+                ctx.fillStyle = "#FFF";
+                ctx.fillRect(150, 80, 4, 4); ctx.fillRect(400, 120, 5, 5); ctx.fillRect(750, 70, 4, 4);
+                // Luna
+                ctx.fillStyle = "#FFF8DC";
+                ctx.beginPath(); ctx.arc(800, 100, 35, 0, Math.PI*2); ctx.fill();
+            } else if (nivel === 3) {
+                // Atardecer cálido
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, "#ff7e5f");
+                grad.addColorStop(1, "#feb47b");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else if (nivel === 4) {
+                // Noche mágica azulada
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, "#2c3e50");
+                grad.addColorStop(1, "#3498db");
+                ctx.fillStyle = grad;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            } else {
+                // Nivel 5: Aurora boreal romántica
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, "#11998e");
+                grad.addColorStop(1, "#38ef7d");
+                ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            for (let z of zanahorias) {
-                ctx.beginPath();
-                ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
-                ctx.fillStyle = "#ff7f00";
-                ctx.fill();
-                ctx.lineWidth = 2.5;
-                ctx.strokeStyle = "#fff";
-                ctx.stroke();
-                ctx.closePath();
+            // Suelo dibujado
+            ctx.fillStyle = (nivel === 2) ? "#142814" : "#2e7d32";
+            ctx.fillRect(0, 380, canvas.width, 120);
+            ctx.fillStyle = "#8d5524";
+            ctx.fillRect(0, 380, canvas.width, 10);
 
-                ctx.fillStyle = "#228b22";
-                ctx.fillRect(z.x - 4, z.y - z.radius - 10, 8, 10);
+            // --- DIBUJAR PLATAFORMAS MÓVILES ---
+            for (let plat of plataformasMoviles) {
+                ctx.fillStyle = "#d7ccc8";
+                ctx.strokeStyle = "#8d5524";
+                ctx.lineWidth = 3;
+                ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
+                ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
             }
 
+            // --- DIBUJAR CORAZONES AZULES Y ROSAS ---
+            for (let el of elementos) {
+                ctx.font = "32px sans-serif";
+                ctx.textAlign = "center";
+                ctx.textBaseline = "middle";
+                let simboloCorazon = (el.tipo === 'rosa') ? "💖" : "💙";
+                ctx.fillText(simboloCorazon, el.x, el.y);
+            }
+
+            // --- DIBUJAR OBSTÁCULOS NÍDIDOS ---
             for (let o of obstaculos) {
-                ctx.fillStyle = "#8b4513";
-                ctx.fillRect(o.x, o.y, o.width, o.height);
-                ctx.fillStyle = "#5c2c16";
-                ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 10);
+                if (o.tipo === 'tubo_arriba' || o.tipo === 'tubo_abajo') {
+                    ctx.fillStyle = "#ffb6c1";
+                    ctx.fillRect(o.x, o.y, o.width, o.height);
+                    ctx.strokeStyle = "#fff";
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(o.x, o.y, o.width, o.height);
+                } else if (o.tipo === 'espinas') {
+                    ctx.fillStyle = "#b71c1c";
+                    ctx.beginPath();
+                    let wEspina = 12;
+                    for (let ex = o.x; ex < o.x + o.width; ex += wEspina) {
+                        ctx.moveTo(ex, o.y + o.height);
+                        ctx.lineTo(ex + wEspina/2, o.y);
+                        ctx.lineTo(ex + wEspina, o.y + o.height);
+                    }
+                    ctx.fill();
+                } else {
+                    // Roca o tronco estilizado
+                    ctx.fillStyle = "#6d4c41";
+                    ctx.beginPath();
+                    ctx.roundRect(o.x, o.y, o.width, o.height, [8]);
+                    ctx.fill();
+                    ctx.strokeStyle = "#3e2723";
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                }
             }
 
+            // --- DIBUJAR CONEJO NÍDIDO ---
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
-                ctx.fillStyle = "white";
+                ctx.fillStyle = "#fff";
                 ctx.fillRect(conejo.x, conejo.y, conejo.width, conejo.height);
             }
         }
