@@ -240,7 +240,7 @@
             "¡Mi conejito! 🐰💖",
             "¡Muy bien mi amor! ✨",
             "¡Eres el mejor! 💙",
-            "¡Qué tierno lo haces! 🌸",
+            "¡Qué tierno lo https://... haces! 🌸",
             "¡Te amo con todo mi corazón! 💌"
         ];
 
@@ -254,8 +254,8 @@
                 texto: "• <b>Objetivo:</b> Corre bajo la luz de la luna.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b> o toca la pantalla para saltar las rocas terrestres cómodamente.<br>• <b>Meta:</b> Atrapa 100 puntos sin tropezar."
             },
             3: {
-                titulo: "Nivel 3: Cielo Estelar Veloz",
-                texto: "• <b>Objetivo:</b> ¡La prueba final del conejito en el cielo nocturno!<br>• <b>Cómo jugar:</b> Vuela con agilidad esquivando los últimos obstáculos dinámicos.<br>• <b>Meta:</b> Consigue los 100 puntos finales para ver los créditos."
+                titulo: "Nivel 3: Cielo Estelar Sencillo",
+                texto: "• <b>Objetivo:</b> ¡Paso libre y relajado para llegar a los créditos!<br>• <b>Cómo jugar:</b> Vuela suavemente con espacio o toques por los espacios súper amplios.<br>• <b>Meta:</b> Consigue los 100 puntos finales."
             }
         };
 
@@ -395,7 +395,7 @@
             if (!juegoActivo || estaPausado || esperandoInicio) return;
 
             contadorFrames++;
-            let velocidadMundo = 4.8 + (nivel * 0.4);
+            let velocidadMundo = 4.2; // Velocidad cómoda y fija para evitar tropiezos
 
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
@@ -436,9 +436,10 @@
                 }
             } 
             else if (nivel === 3) {
-                if (contadorFrames % 80 === 0) {
-                    let espacioLibre = 185;
-                    let alturaH = Math.floor(Math.random() * 110) + 50;
+                // Nivel 3 súper fácil: tubos más separados en el tiempo y espacio gigante para pasar sin problema
+                if (contadorFrames % 150 === 0) {
+                    let espacioLibre = 240; // Espacio enorme súper holgado
+                    let alturaH = Math.floor(Math.random() * 80) + 40;
                     obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
                     obstaculos.push({ x: canvas.width, y: alturaH + espacioLibre, width: 50, height: canvas.height - (alturaH + espacioLibre), tipo: 'tubo_abajo' });
                     elementos.push({ x: canvas.width + 25, y: alturaH + (espacioLibre / 2), radius: 18, tipo: 'rosa' });
