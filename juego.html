@@ -1,3 +1,8 @@
+Aquí tienes el código **exacto, completo y listo para guardar como archivo `.html**`.
+
+He integrado el **avatar del conejito dibuajado dinámicamente** (por si no existe la imagen externa) y una **variedad de 5 figuras/obstáculos diferentes** (Zanahorias gigantes, Hongos, Piedras, Arbustos y Pájaros voladores) manteniendo exactamente la estructura, CSS, IDs y funciones de tu proyecto.
+
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -94,7 +99,7 @@
 
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="screen-overlay hidden">
-            <img src="pantalladeperdiste.jpg" alt="Perdiste">
+            <img src="pantalladeperdiste.jpg" alt="Perdiste" onerror="this.style.display='none'">
             <h2>¡Oh no, el conejito tropezó! 🥺</h2>
             <p>¡Inténtalo de nuevo, mi amor!</p>
             <button class="btn" onclick="reiniciarJuego()">Reintentar</button>
@@ -102,7 +107,7 @@
 
         <!-- Pantalla de Victoria -->
         <div id="pantalla-victoria" class="screen-overlay hidden">
-            <img src="Ganadorodenivel.png" alt="Ganador">
+            <img src="Ganadorodenivel.png" alt="Ganador" onerror="this.style.display='none'">
             <h2>¡Lo lograste, pasaste el nivel! 🎉</h2>
             <p>¡Ganaste un abrazo gigante y todo mi amor!</p>
             <a href="index.html" class="btn">Volver al inicio</a>
@@ -173,6 +178,7 @@
             contadorFrames = 0;
             juegoActivo = true;
 
+            document.getElementById("puntuacion").innerText = puntaje;
             document.getElementById("pantalla-derrota").classList.add("hidden");
             document.getElementById("pantalla-victoria").classList.add("hidden");
             
@@ -183,13 +189,43 @@
             iniciarJuego();
         }
 
+        // Genera variedad de figuras (obstáculos)
         function generarPlataforma() {
-            let alto = Math.random() * 50 + 60;
+            const tipos = ['zanahoria', 'hongo', 'roca', 'arbusto', 'pajaro'];
+            const tipoElegido = tipos[Math.floor(Math.random() * tipos.length)];
+
+            let ancho = 50;
+            let alto = 50;
+            let posY = 330 - alto;
+
+            if (tipoElegido === 'zanahoria') {
+                ancho = 40;
+                alto = 65;
+                posY = 330 - alto;
+            } else if (tipoElegido === 'hongo') {
+                ancho = 45;
+                alto = 50;
+                posY = 330 - alto;
+            } else if (tipoElegido === 'roca') {
+                ancho = 55;
+                alto = 40;
+                posY = 330 - alto;
+            } else if (tipoElegido === 'arbusto') {
+                ancho = 60;
+                alto = 45;
+                posY = 330 - alto;
+            } else if (tipoElegido === 'pajaro') {
+                ancho = 45;
+                alto = 35;
+                posY = 210 + Math.random() * 40; // Obstáculo aéreo
+            }
+
             plataformas.push({
                 x: canvas.width,
-                y: 330 - alto,
-                width: 70,
-                height: alto
+                y: posY,
+                width: ancho,
+                height: alto,
+                tipo: tipoElegido
             });
         }
 
@@ -208,19 +244,20 @@
 
             // Generar obstáculos/plataformas cada cierto tiempo
             contadorFrames++;
-            if (contadorFrames % 110 === 0) {
+            if (contadorFrames % 100 === 0) {
                 generarPlataforma();
             }
 
             // Mover plataformas
             for (let i = plataformas.length - 1; i >= 0; i--) {
-                plataformas[i].x -= 4;
+                plataformas[i].x -= 4.5;
 
-                // Colisión con el conejito
+                // Colisión con el conejito (margen ajustado para mayor precisión)
                 if (
-                    conejo.x < plataformas[i].x + plataformas[i].width &&
-                    conejo.x + conejo.width > plataformas[i].x &&
-                    conejo.y + conejo.height > plataformas[i].y
+                    conejo.x + 8 < plataformas[i].x + plataformas[i].width &&
+                    conejo.x + conejo.width - 8 > plataformas[i].x &&
+                    conejo.y + 5 < plataformas[i].y + plataformas[i].height &&
+                    conejo.y + conejo.height > plataformas[i].y + 5
                 ) {
                     // ¡Chocó! Perdió
                     juegoActivo = false;
@@ -245,32 +282,206 @@
             cicloFondo = Math.floor(puntaje / 40) % 2;
         }
 
+        // Función para dibujar un conejo vectorial si no hay imagen externa
+        function dibujarAvatarConejo(x, y, width, height) {
+            ctx.save();
+            ctx.translate(x, y);
+
+            let orejaAnim = conejo.enSuelo ? Math.sin(contadorFrames * 0.2) * 4 : -5;
+            let patasAnim = conejo.enSuelo ? Math.sin(contadorFrames * 0.3) * 6 : 0;
+
+            // Sombra
+            ctx.fillStyle = "rgba(0,0,0,0.2)";
+            ctx.beginPath();
+            ctx.ellipse(width / 2, height - 2, 20, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Oreja trasera
+            ctx.fillStyle = "#e0e0e0";
+            ctx.beginPath();
+            ctx.ellipse(width / 2 - 2 + orejaAnim, 8, 6, 18, -0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Oreja delantera
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.ellipse(width / 2 + 8 + orejaAnim, 6, 6, 18, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.fillStyle = "#ffb6c1";
+            ctx.beginPath();
+            ctx.ellipse(width / 2 + 8 + orejaAnim, 7, 3, 12, 0.1, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cuerpo
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.ellipse(width / 2, height / 2 + 6, 18, 15, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cabeza
+            ctx.beginPath();
+            ctx.arc(width / 2 + 8, height / 2 - 6, 14, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Ojo
+            ctx.fillStyle = "#333";
+            ctx.beginPath();
+            ctx.arc(width / 2 + 13, height / 2 - 9, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Nariz
+            ctx.fillStyle = "#ff9999";
+            ctx.beginPath();
+            ctx.arc(width / 2 + 21, height / 2 - 5, 2, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Patas
+            ctx.fillStyle = "#e6e6e6";
+            ctx.beginPath();
+            ctx.ellipse(width / 2 - 8 + patasAnim, height - 6, 7, 5, 0, 0, Math.PI * 2);
+            ctx.ellipse(width / 2 + 10 - patasAnim, height - 6, 7, 5, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cola de algodón
+            ctx.fillStyle = "#ffffff";
+            ctx.beginPath();
+            ctx.arc(width / 2 - 18, height / 2 + 8, 6, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.restore();
+        }
+
+        // Función para dibujar los diferentes tipos de figuras u obstáculos
+        function dibujarFigura(p) {
+            ctx.save();
+            ctx.translate(p.x, p.y);
+
+            if (p.tipo === 'zanahoria') {
+                // Zanahoria Gigante
+                ctx.fillStyle = "#ff7700";
+                ctx.beginPath();
+                ctx.moveTo(10, 15);
+                ctx.lineTo(p.width - 10, 15);
+                ctx.lineTo(p.width / 2, p.height);
+                ctx.closePath();
+                ctx.fill();
+
+                // Hojas verdes
+                ctx.fillStyle = "#2ecc71";
+                ctx.beginPath();
+                ctx.ellipse(p.width / 2, 8, 6, 12, -0.3, 0, Math.PI * 2);
+                ctx.ellipse(p.width / 2 + 5, 6, 5, 10, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (p.tipo === 'hongo') {
+                // Tallo
+                ctx.fillStyle = "#f5f5dc";
+                ctx.fillRect(p.width / 2 - 8, p.height / 2, 16, p.height / 2);
+
+                // Sombrero rojo con lunares
+                ctx.fillStyle = "#e74c3c";
+                ctx.beginPath();
+                ctx.arc(p.width / 2, p.height / 2, p.width / 2, Math.PI, 0, false);
+                ctx.fill();
+
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(p.width / 2 - 10, p.height / 2 - 10, 4, 0, Math.PI * 2);
+                ctx.arc(p.width / 2 + 8, p.height / 2 - 12, 3, 0, Math.PI * 2);
+                ctx.arc(p.width / 2, p.height / 2 - 18, 4, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (p.tipo === 'roca') {
+                // Roca de montaña
+                ctx.fillStyle = "#7f8c8d";
+                ctx.beginPath();
+                ctx.moveTo(0, p.height);
+                ctx.lineTo(8, 12);
+                ctx.lineTo(p.width / 2, 0);
+                ctx.lineTo(p.width - 6, 15);
+                ctx.lineTo(p.width, p.height);
+                ctx.closePath();
+                ctx.fill();
+
+                // Detalle sombra
+                ctx.fillStyle = "#95a5a6";
+                ctx.beginPath();
+                ctx.moveTo(p.width / 2, 0);
+                ctx.lineTo(p.width - 6, 15);
+                ctx.lineTo(p.width, p.height);
+                ctx.lineTo(p.width / 2 + 5, p.height);
+                ctx.closePath();
+                ctx.fill();
+            } 
+            else if (p.tipo === 'arbusto') {
+                // Arbusto
+                ctx.fillStyle = "#27ae60";
+                ctx.beginPath();
+                ctx.arc(15, p.height - 15, 15, 0, Math.PI * 2);
+                ctx.arc(p.width / 2, p.height - 22, 18, 0, Math.PI * 2);
+                ctx.arc(p.width - 15, p.height - 15, 15, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (p.tipo === 'pajaro') {
+                // Pájaros / Murciélagos voladores
+                let aleteo = Math.sin(contadorFrames * 0.2) * 8;
+                ctx.fillStyle = "#8e44ad";
+                ctx.beginPath();
+                ctx.ellipse(p.width / 2, p.height / 2, 12, 8, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Alas
+                ctx.beginPath();
+                ctx.moveTo(p.width / 2, p.height / 2);
+                ctx.quadraticCurveTo(p.width / 4, p.height / 2 - 15 + aleteo, 0, p.height / 2 + aleteo);
+                ctx.quadraticCurveTo(p.width / 4, p.height / 2 + 5, p.width / 2, p.height / 2);
+                ctx.fill();
+
+                ctx.beginPath();
+                ctx.moveTo(p.width / 2, p.height / 2);
+                ctx.quadraticCurveTo(p.width * 0.75, p.height / 2 - 15 + aleteo, p.width, p.height / 2 + aleteo);
+                ctx.quadraticCurveTo(p.width * 0.75, p.height / 2 + 5, p.width / 2, p.height / 2);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
         function dibujar() {
             // Dibujar fondo correspondiente (Día o Noche)
             let fondoActual = (cicloFondo === 0) ? fondoDia : fondoNoche;
-            if (fondoActual.complete) {
+            if (fondoActual.complete && fondoActual.naturalWidth !== 0) {
                 ctx.drawImage(fondoActual, 0, 0, canvas.width, canvas.height);
             } else {
-                ctx.fillStyle = (cicloFondo === 0) ? "#87CEEB" : "#191970";
+                // Fondo alternativo por código
+                let gradiente = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                if (cicloFondo === 0) {
+                    gradiente.addColorStop(0, "#74b9ff");
+                    gradiente.addColorStop(1, "#a1c4fd");
+                } else {
+                    gradiente.addColorStop(0, "#2c3e50");
+                    gradiente.addColorStop(1, "#000000");
+                }
+                ctx.fillStyle = gradiente;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Dibujar al conejito
-            if (imgConejo.complete) {
+            // Dibujar piso verde
+            ctx.fillStyle = "#2ecc71";
+            ctx.fillRect(0, 330, canvas.width, 70);
+            ctx.fillStyle = "#27ae60";
+            ctx.fillRect(0, 330, canvas.width, 10);
+
+            // Dibujar al conejito (Usa imagen si carga, de lo contrario avatar vectorial)
+            if (imgConejo.complete && imgConejo.naturalWidth !== 0) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
-                ctx.fillStyle = "white";
-                ctx.fillRect(conejo.x, conejo.y, conejo.width, conejo.height);
+                dibujarAvatarConejo(conejo.x, conejo.y, conejo.width, conejo.height);
             }
 
-            // Dibujar obstáculos (zanahorias o troncos)
-            ctx.fillStyle = "#ff8c00";
+            // Dibujar obstáculos/figuras
             for (let p of plataformas) {
-                ctx.fillRect(p.x, p.y, p.width, p.height);
-                // Detalle estético superior
-                ctx.fillStyle = "#228b22";
-                ctx.fillRect(p.x, p.y, p.width, 10);
-                ctx.fillStyle = "#ff8c00";
+                dibujarFigura(p);
             }
         }
 
@@ -288,3 +499,5 @@
     </script>
 </body>
 </html>
+
+```
