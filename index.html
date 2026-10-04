@@ -15,13 +15,13 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start; /* Alineado arriba para dejar libre la zona de los conejitos */
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             text-align: center;
             box-sizing: border-box;
-            padding: 40px 20px;
+            padding: 50px 20px;
             overflow: hidden;
             position: relative;
         }
@@ -59,39 +59,47 @@
         }
 
         /* Elementos por encima del fondo */
-        h1, .btn-container, .musica-control {
+        .contenido-superior, .musica-control {
             position: relative;
             z-index: 2;
         }
 
-        /* Título con animación de latido/brillo */
+        .contenido-superior {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px; /* Espacio elegante entre el título grande y los botones debajo */
+            max-width: 600px;
+        }
+
+        /* Título mucho más grande, sin emoji y con animación de latido/brillo */
         h1 {
-            font-size: 44px;
-            margin-top: 20px;
-            font-weight: bold;
+            font-size: 65px;
+            margin: 0;
+            font-weight: 800;
+            letter-spacing: 2px;
             color: #ffffff;
-            text-shadow: 0 3px 15px rgba(255, 105, 180, 0.6), 0 0 30px rgba(30, 144, 255, 0.4);
+            text-shadow: 0 4px 20px rgba(255, 105, 180, 0.7), 0 0 40px rgba(30, 144, 255, 0.5);
             animation: latidoTitulo 2s ease-in-out infinite;
         }
 
         @keyframes latidoTitulo {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.04); }
         }
 
-        /* Contenedor de botones menos invasivos y elegantes */
+        /* Contenedor de botones debajo del título */
         .btn-container {
             display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
+            gap: 15px;
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         .btn {
             background-color: rgba(255, 182, 193, 0.25); /* Rosa translúcido suave */
             color: #fff;
-            padding: 12px 26px;
+            padding: 12px 28px;
             font-size: 16px;
             border: 2px solid rgba(255, 255, 255, 0.6);
             border-radius: 30px;
@@ -101,6 +109,7 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
             backdrop-filter: blur(5px);
             transition: all 0.3s ease;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
 
         .btn:hover {
@@ -120,21 +129,24 @@
             border-color: #dda0dd;
         }
 
-        /* Control de música discreto y elegante */
+        /* Control de música discreto en la esquina superior o abajo */
         .musica-control {
-            background: rgba(0, 0, 0, 0.4);
+            position: absolute;
+            bottom: 25px;
+            background: rgba(0, 0, 0, 0.5);
             border: 1px solid rgba(255, 255, 255, 0.3);
-            padding: 8px 16px;
+            color: #fff;
+            padding: 8px 18px;
             border-radius: 20px;
             font-size: 14px;
             cursor: pointer;
             backdrop-filter: blur(5px);
             transition: 0.3s;
-            margin-bottom: 10px;
+            z-index: 2;
         }
 
         .musica-control:hover {
-            background: rgba(255, 105, 180, 0.4);
+            background: rgba(255, 105, 180, 0.5);
         }
     </style>
 </head>
@@ -143,22 +155,23 @@
     <!-- Fondo de corazones flotantes azules y rosas -->
     <div id="corazones-fondo"></div>
 
-    <!-- Elemento de audio (Asegúrate de cambiar 'musica.mp3' por el nombre de tu archivo de música si tienes uno) -->
+    <!-- Elemento de audio -->
     <audio id="audioFondo" loop>
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
 
-    <h1>I bunny you! 🐰</h1>
-
-    <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-        <!-- Botón para activar/pausar la música por si el navegador bloquea el autoplay -->
-        <button class="musica-control" onclick="toggleMusica()" id="btnMusica">🎵 Reproducir Música 🤍</button>
+    <!-- Bloque superior centrado: Título grande y botones organizados -->
+    <div class="contenido-superior">
+        <h1>I bunny you!</h1>
 
         <div class="btn-container">
             <a href="juego.html" class="btn">Comenzar Aventura 🤍</a>
             <a href="creditos.html" class="btn btn-creditos">Créditos ✨</a>
         </div>
     </div>
+
+    <!-- Control de música abajo de manera discreta -->
+    <button class="musica-control" onclick="toggleMusica()" id="btnMusica">🎵 Reproducir Música 🤍</button>
 
     <script>
         // Generador automático de corazones azules y rosas
@@ -167,7 +180,6 @@
             const corazon = document.createElement("div");
             corazon.classList.add("corazon-flotante");
             
-            // Alternar entre corazones rosas, azules y destellos
             const simbolos = ["💖", "💙", "✨", "💕", "🩵"];
             corazon.innerHTML = simbolos[Math.floor(Math.random() * simbolos.length)];
             
@@ -204,7 +216,7 @@
             }
         }
 
-        // Intento de reproducción automática al cargar la página
+        // Intento de reproducción automática al primer clic del usuario
         window.addEventListener('click', () => {
             if (!reproduciendo) {
                 audio.play().then(() => {
