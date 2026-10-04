@@ -22,11 +22,13 @@
             height: 450px;
             border-radius: 15px;
             overflow: hidden;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
         }
         canvas {
             display: block;
-            image-rendering: -webkit-optimize-contrast;
+            width: 100%;
+            height: 100%;
+            image-rendering: pixelated;
             image-rendering: crisp-edges;
         }
         #hud {
@@ -34,9 +36,9 @@
             top: 15px;
             left: 20px;
             color: white;
-            font-size: 22px;
+            font-size: 24px;
             font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
             z-index: 5;
         }
         .overlay {
@@ -45,7 +47,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.75);
+            background: rgba(0,0,0,0.78);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -56,14 +58,12 @@
         }
         .overlay img {
             width: 160px;
+            height: 160px;
+            object-fit: cover;
             border-radius: 15px;
-            margin-bottom: 12px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            animation: pulse 1.5s infinite alternate;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.05); }
+            margin-bottom: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            border: 3px solid #ffb6c1;
         }
         .hidden {
             display: none !important;
@@ -72,13 +72,13 @@
             background-color: #ffb6c1;
             color: white;
             border: none;
-            padding: 12px 25px;
+            padding: 12px 28px;
             font-size: 18px;
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-top: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
             text-decoration: none;
             transition: 0.2s;
         }
@@ -129,14 +129,14 @@
         let tiempoCiclo = 0; // Cambia día/noche cada 20 segundos
 
         let conejo = {
-            x: 90, 
-            y: 250, 
-            width: 85,   // Tamaño grande y bien visible
-            height: 85,  // Tamaño grande y bien visible
+            x: 100, 
+            y: 280, 
+            width: 80,   // Gran tamaño para verse muy claro
+            height: 80,  // Gran tamaño para verse muy claro
             vy: 0, 
             gravedad: 0.5, 
-            fuerzaSalto: -11.5, 
-            suelo: 255, // Ubicado perfectamente sobre el camino verde
+            fuerzaSalto: -12, 
+            suelo: 280,  // Posición exacta sobre el camino de tierra
             enSuelo: false
         };
 
@@ -206,7 +206,7 @@
 
             tiempoCiclo += 1/60; 
 
-            // Movimiento del conejito
+            // Movimiento físico del conejito
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
@@ -218,20 +218,19 @@
                 conejo.enSuelo = false;
             }
 
-            // Velocidad fluida del nivel
+            // Velocidad del nivel
             let velocidadMundo = 3.5 + (nivel * 0.5);
-
             contadorFrames++;
 
-            // Generar zanahorias a alturas cómodas
-            if (contadorFrames % 100 === 0) {
-                let alturaZanahoria = Math.random() > 0.4 ? 275 : 190; 
-                zanahorias.push({ x: canvas.width + 40, y: alturaZanahoria, radius: 15, valor: 20 });
+            // Generar zanahorias (bolitas naranjas) en posiciones cómodas
+            if (contadorFrames % 110 === 0) {
+                let alturaZanahoria = Math.random() > 0.4 ? 300 : 200; 
+                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 14, valor: 20 });
             }
 
-            // Generar obstáculos pequeños que dan margen de salto
-            if (contadorFrames % 140 === 0) {
-                obstaculos.push({ x: canvas.width + 40, y: 295, width: 30, height: 45 });
+            // Generar obstáculos que se pueden saltar fácilmente
+            if (contadorFrames % 150 === 0) {
+                obstaculos.push({ x: canvas.width + 50, y: 310, width: 32, height: 50 });
             }
 
             // Mover y verificar zanahorias
@@ -248,7 +247,7 @@
                     if (puntos >= 100) {
                         juegoActivo = false;
                         if (nivel === 5) {
-                            document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️";
+                            document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️️";
                             document.getElementById("texto-victoria").innerText = "¡Eres la mejor jugadora, vamos a los créditos!";
                         } else {
                             document.getElementById("titulo-victoria").innerText = `¡Nivel ${nivel} Superado! 🎉`;
@@ -262,14 +261,14 @@
                 }
             }
 
-            // Mover y verificar obstáculos con colisión justa
+            // Mover y verificar obstáculos con hitbox muy justa y generosa
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
                 if (
-                    conejo.x + 25 < obstaculos[i].x + obstaculos[i].width &&
-                    conejo.x + conejo.width - 25 > obstaculos[i].x &&
-                    conejo.y + conejo.height > obstaculos[i].y + 15
+                    conejo.x + 20 < obstaculos[i].x + obstaculos[i].width &&
+                    conejo.x + conejo.width - 20 > obstaculos[i].x &&
+                    conejo.y + conejo.height > obstaculos[i].y + 10
                 ) {
                     juegoActivo = false;
                     document.getElementById("pantalla-derrota").classList.remove("hidden");
@@ -293,12 +292,6 @@
                 ctx.fillStyle = (cicloActual === 0) ? "#87CEEB" : "#0d1b2a";
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
-
-            // Suelo inferior estético
-            ctx.fillStyle = "#2e8b57";
-            ctx.fillRect(0, 335, canvas.width, 115);
-            ctx.fillStyle = "#228b22";
-            ctx.fillRect(0, 335, canvas.width, 10);
 
             // Dibujar zanahorias (bolitas naranjas con hojita verde)
             for (let z of zanahorias) {
@@ -324,7 +317,7 @@
                 ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 8);
             }
 
-            // Dibujar conejito grande y nítido
+            // Dibujar conejito nítido, grande y corriendo alineado al camino
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
