@@ -252,7 +252,7 @@
             },
             2: {
                 titulo: "Nivel 2: Carrera Nocturna de Obstáculos",
-                texto: "• <b>Objetivo:</b> Corre bajo la luz de la luna.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b> o toca la pantalla para saltar las rocas terrestres.<br>• <b>Meta:</b> Atrapa 100 puntos sin tropezar."
+                texto: "• <b>Objetivo:</b> Corre bajo la luz de la luna.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b> o toca la pantalla para saltar las rocas terrestres cómodamente.<br>• <b>Meta:</b> Atrapa 100 puntos sin tropezar."
             },
             3: {
                 titulo: "Nivel 3: Escalada en las Alturas",
@@ -425,12 +425,13 @@
                 }
             } 
             else if (nivel === 2) {
-                if (contadorFrames % 95 === 0) {
-                    obstaculos.push({ x: canvas.width, y: 345, width: 40, height: 45, tipo: 'roca' });
+                // Obstáculos mucho más espaciados (cada 150 frames en lugar de 95) para dar tiempo a verlos y saltarlos
+                if (contadorFrames % 150 === 0) {
+                    obstaculos.push({ x: canvas.width, y: 350, width: 35, height: 35, tipo: 'roca' });
                 }
-                if (contadorFrames % 70 === 0) {
-                    // Corazones a altura alcanzable mediante salto normal desde el suelo
-                    let alturaCorazon = Math.random() > 0.5 ? 270 : 310;
+                // Corazones distribuidos de forma justa y alcanzable
+                if (contadorFrames % 80 === 0) {
+                    let alturaCorazon = Math.random() > 0.5 ? 260 : 300;
                     elementos.push({ x: canvas.width, y: alturaCorazon, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
                 }
             } 
