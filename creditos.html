@@ -26,7 +26,6 @@
         }
         canvas {
             display: block;
-            /* Esto evita que se vea borroso el conejito */
             image-rendering: -webkit-optimize-contrast;
             image-rendering: crisp-edges;
         }
@@ -56,9 +55,9 @@
             z-index: 10;
         }
         .overlay img {
-            width: 170px;
+            width: 160px;
             border-radius: 15px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
             animation: pulse 1.5s infinite alternate;
         }
@@ -78,7 +77,7 @@
             border-radius: 30px;
             cursor: pointer;
             font-weight: bold;
-            margin-top: 15px;
+            margin-top: 12px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.3);
             text-decoration: none;
             transition: 0.2s;
@@ -132,12 +131,12 @@
         let conejo = {
             x: 90, 
             y: 250, 
-            width: 75,   // Tamaño más grande y visible
-            height: 75,  // Tamaño más grande y visible
+            width: 85,   // Tamaño grande y bien visible
+            height: 85,  // Tamaño grande y bien visible
             vy: 0, 
-            gravedad: 0.55, 
-            fuerzaSalto: -12.5, 
-            suelo: 255, // Nivel del suelo ajustado para que pise bien
+            gravedad: 0.5, 
+            fuerzaSalto: -11.5, 
+            suelo: 255, // Ubicado perfectamente sobre el camino verde
             enSuelo: false
         };
 
@@ -145,7 +144,7 @@
         let obstaculos = []; 
         let contadorFrames = 0;
 
-        // Controles de salto (Barra espaciadora o clic)
+        // Controles de salto (Barra espaciadora o clic en pantalla)
         window.addEventListener("keydown", e => { 
             if (e.code === "Space") { 
                 e.preventDefault(); 
@@ -207,7 +206,7 @@
 
             tiempoCiclo += 1/60; 
 
-            // Movimiento del conejito (Física de salto)
+            // Movimiento del conejito
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
@@ -219,30 +218,29 @@
                 conejo.enSuelo = false;
             }
 
-            // Velocidad del mundo según el nivel
-            let velocidadMundo = 4 + (nivel * 0.6);
+            // Velocidad fluida del nivel
+            let velocidadMundo = 3.5 + (nivel * 0.5);
 
             contadorFrames++;
 
-            // Generar zanahorias (a una altura alcanzable tanto corriendo como saltando)
-            if (contadorFrames % 95 === 0) {
-                let alturaZanahoria = Math.random() > 0.5 ? 270 : 190; // Unas abajo, otras saltando
-                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 14, valor: 20 });
+            // Generar zanahorias a alturas cómodas
+            if (contadorFrames % 100 === 0) {
+                let alturaZanahoria = Math.random() > 0.4 ? 275 : 190; 
+                zanahorias.push({ x: canvas.width + 40, y: alturaZanahoria, radius: 15, valor: 20 });
             }
 
-            // Generar obstáculos (troncos/rocas bajitos que se pueden saltar con margen)
-            if (contadorFrames % 120 === 0) {
-                obstaculos.push({ x: canvas.width + 50, y: 285, width: 35, height: 45 });
+            // Generar obstáculos pequeños que dan margen de salto
+            if (contadorFrames % 140 === 0) {
+                obstaculos.push({ x: canvas.width + 40, y: 295, width: 30, height: 45 });
             }
 
             // Mover y verificar zanahorias
             for (let i = zanahorias.length - 1; i >= 0; i--) {
                 zanahorias[i].x -= velocidadMundo;
                 
-                // Colisión con el conejito (círculo a rectángulo aproximado)
                 let dx = (conejo.x + conejo.width/2) - zanahorias[i].x;
                 let dy = (conejo.y + conejo.height/2) - zanahorias[i].y;
-                if (Math.hypot(dx, dy) < 42) {
+                if (Math.hypot(dx, dy) < 45) {
                     puntos += zanahorias[i].valor;
                     zanahorias.splice(i, 1);
                     actualizarHUD();
@@ -264,15 +262,14 @@
                 }
             }
 
-            // Mover y verificar obstáculos
+            // Mover y verificar obstáculos con colisión justa
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
-                // Colisión precisa con el obstáculo
                 if (
-                    conejo.x + 15 < obstaculos[i].x + obstaculos[i].width &&
-                    conejo.x + conejo.width - 15 > obstaculos[i].x &&
-                    conejo.y + conejo.height > obstaculos[i].y + 10
+                    conejo.x + 25 < obstaculos[i].x + obstaculos[i].width &&
+                    conejo.x + conejo.width - 25 > obstaculos[i].x &&
+                    conejo.y + conejo.height > obstaculos[i].y + 15
                 ) {
                     juegoActivo = false;
                     document.getElementById("pantalla-derrota").classList.remove("hidden");
@@ -286,7 +283,7 @@
         }
 
         function dibujar() {
-            // Fondo día / noche según pasen los 20 segundos
+            // Fondo día / noche cada 20 segundos
             let cicloActual = Math.floor(tiempoCiclo / 20) % 2; 
             let fondoActivo = (cicloActual === 0) ? fondoDia : fondoNoche;
 
@@ -297,11 +294,11 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Dibujar suelo inferior estético
+            // Suelo inferior estético
             ctx.fillStyle = "#2e8b57";
-            ctx.fillRect(0, 330, canvas.width, 120);
+            ctx.fillRect(0, 335, canvas.width, 115);
             ctx.fillStyle = "#228b22";
-            ctx.fillRect(0, 330, canvas.width, 12);
+            ctx.fillRect(0, 335, canvas.width, 10);
 
             // Dibujar zanahorias (bolitas naranjas con hojita verde)
             for (let z of zanahorias) {
@@ -319,15 +316,15 @@
                 ctx.fillRect(z.x - 3, z.y - z.radius - 8, 6, 8);
             }
 
-            // Dibujar obstáculos (troncos/obstáculos saltables)
+            // Dibujar obstáculos
             for (let o of obstaculos) {
                 ctx.fillStyle = "#8b4513";
                 ctx.fillRect(o.x, o.y, o.width, o.height);
                 ctx.fillStyle = "#5c2c16";
-                ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 8); // detalle de tronco
+                ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 8);
             }
 
-            // Dibujar conejito nítido y de buen tamaño
+            // Dibujar conejito grande y nítido
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
