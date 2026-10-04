@@ -14,58 +14,50 @@
             height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
             align-items: center;
             font-family: 'Arial', sans-serif;
             color: #fff;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.8);
             text-align: center;
-        }
-        .container {
-            background: rgba(0, 0, 0, 0.4);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 400px;
+            box-sizing: border-box;
+            padding: 40px 20px;
         }
         h1 {
-            font-size: 26px;
-            margin-bottom: 20px;
+            font-size: 38px;
+            margin: 0;
+            font-weight: bold;
+            letter-spacing: 1px;
+            color: #fff9f9;
+            text-shadow: 3px 3px 8px rgba(0,0,0,0.9);
         }
         .btn {
             background-color: #ffb6c1;
             color: #fff;
-            padding: 12px 25px;
+            padding: 14px 30px;
             font-size: 18px;
             border: none;
             border-radius: 30px;
             cursor: pointer;
             text-decoration: none;
             font-weight: bold;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
             transition: 0.3s;
+            margin-bottom: 20px;
         }
         .btn:hover {
             background-color: #ff69b4;
-            transform: scale(1.05);
-        }
-        img.icon {
-            width: 80px;
-            margin-bottom: 15px;
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            transform: scale(1.08);
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <img src="conejitocorriendo.png" alt="Conejo tierno" class="icon">
-        <h1>¡Hola mi amor! ¿Estás listo para este pequeño reto?</h1>
-        <a href="juego.html" class="btn">Comenzar Aventura 🐰❤️</a>
-    </div>
+    <!-- Título superior en la zona clara de la imagen -->
+    <h1>I bunny you! 🐰</h1>
+
+    <!-- Botón inferior despejado -->
+    <a href="juego.html" class="btn">Continuar 🤍</a>
 
 </body>
 </html>
