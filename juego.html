@@ -99,8 +99,8 @@
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="overlay hidden">
             <img src="pantalladeperdiste.jpg" alt="Perdiste">
-            <h2>¡Oh no, el conejito tropezó! 🥺</h2>
-            <p style="font-size: 20px;">¡Inténtalo de nuevo, mi amor!</p>
+            <h2>¡Casi, mi amor! El conejito tropezó 🥺</h2>
+            <p style="font-size: 20px;">¡Vuelve a intentarlo!</p>
             <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
         </div>
 
@@ -108,7 +108,7 @@
         <div id="pantalla-victoria" class="overlay hidden">
             <img src="Ganadorodenivel.png" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
-            <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo mi amor!</p>
+            <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo, mi vida!</p>
             <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡</button>
         </div>
     </div>
@@ -134,8 +134,8 @@
             width: 100,   
             height: 100,  
             vy: 0, 
-            gravedad: 0.55,       // Gravedad ágil para que responda de inmediato al saltar
-            fuerzaSalto: -11.5,   // Salto cómodo
+            gravedad: 0.55,       
+            fuerzaSalto: -11.5,   
             suelo: 280,  
             enSuelo: false
         };
@@ -216,22 +216,18 @@
                 conejo.enSuelo = false;
             }
 
-            // Velocidad moderada y muy suave
             let velocidadMundo = 3.2 + (nivel * 0.3);
             contadorFrames++;
 
-            // Frecuencia amplia para zanahorias fáciles de atrapar
             if (contadorFrames % 120 === 0) {
                 let alturaZanahoria = Math.random() > 0.4 ? 310 : 200; 
                 zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 18, valor: 20 });
             }
 
-            // Obstáculos más separados y bajitos para saltar sin frustración
             if (contadorFrames % 190 === 0) {
                 obstaculos.push({ x: canvas.width + 50, y: 315, width: 35, height: 55 });
             }
 
-            // Mover y verificar zanahorias
             for (let i = zanahorias.length - 1; i >= 0; i--) {
                 zanahorias[i].x -= velocidadMundo;
                 
@@ -246,10 +242,10 @@
                         juegoActivo = false;
                         if (nivel === 5) {
                             document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️";
-                            document.getElementById("texto-victoria").innerText = "¡Eres la mejor jugadora, vamos a los créditos!";
+                            document.getElementById("texto-victoria").innerText = "¡Eres el mejor, mi amor! ¡Vamos a los créditos!";
                         } else {
                             document.getElementById("titulo-victoria").innerText = `¡Nivel ${nivel} Superado! 🎉`;
-                            document.getElementById("texto-victoria").innerText = "¡Lo lograste, pasas al siguiente nivel!";
+                            document.getElementById("texto-victoria").innerText = "¡Lo lograste, mi vida!";
                         }
                         document.getElementById("pantalla-victoria").classList.remove("hidden");
                         return;
@@ -259,7 +255,6 @@
                 }
             }
 
-            // Hitbox muy noble (permite un pequeño margen de error al saltar)
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
@@ -290,7 +285,6 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Dibujar zanahorias
             for (let z of zanahorias) {
                 ctx.beginPath();
                 ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
@@ -305,7 +299,6 @@
                 ctx.fillRect(z.x - 4, z.y - z.radius - 10, 8, 10);
             }
 
-            // Dibujar obstáculos
             for (let o of obstaculos) {
                 ctx.fillStyle = "#8b4513";
                 ctx.fillRect(o.x, o.y, o.width, o.height);
@@ -313,7 +306,6 @@
                 ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 10);
             }
 
-            // Dibujar conejito
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
