@@ -15,13 +15,13 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Alineado arriba para dejar libre la zona de los conejitos */
+            justify-content: flex-end; /* Todo se alinea abajo para dejar libres a los conejitos */
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             text-align: center;
             box-sizing: border-box;
-            padding: 50px 20px;
+            padding: 25px 20px;
             overflow: hidden;
             position: relative;
         }
@@ -58,28 +58,31 @@
             }
         }
 
-        /* Elementos por encima del fondo */
-        .contenido-superior, .musica-control {
+        /* Bloque inferior que contiene título, botones y música ordenados */
+        .bloque-inferior {
             position: relative;
             z-index: 2;
-        }
-
-        .contenido-superior {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 20px; /* Espacio elegante entre el título grande y los botones debajo */
-            max-width: 600px;
+            gap: 12px;
+            margin-bottom: 10px;
+            background: rgba(0, 0, 0, 0.35); /* Fondo sutil para que resalte sobre el bosque */
+            padding: 20px 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Título mucho más grande, sin emoji y con animación de latido/brillo */
+        /* Título grande sin emoji */
         h1 {
-            font-size: 65px;
+            font-size: 40px;
             margin: 0;
             font-weight: 800;
-            letter-spacing: 2px;
+            letter-spacing: 1.5px;
             color: #ffffff;
-            text-shadow: 0 4px 20px rgba(255, 105, 180, 0.7), 0 0 40px rgba(30, 144, 255, 0.5);
+            text-shadow: 0 3px 15px rgba(255, 105, 180, 0.7), 0 0 30px rgba(30, 144, 255, 0.5);
             animation: latidoTitulo 2s ease-in-out infinite;
         }
 
@@ -88,61 +91,55 @@
             50% { transform: scale(1.04); }
         }
 
-        /* Contenedor de botones debajo del título */
+        /* Contenedor de botones */
         .btn-container {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            background-color: rgba(255, 182, 193, 0.25); /* Rosa translúcido suave */
+            background-color: rgba(255, 182, 193, 0.3);
             color: #fff;
-            padding: 12px 28px;
-            font-size: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.6);
-            border-radius: 30px;
+            padding: 10px 22px;
+            font-size: 15px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 25px;
             cursor: pointer;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(5px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
 
         .btn:hover {
-            background-color: rgba(255, 105, 180, 0.6);
+            background-color: rgba(255, 105, 180, 0.7);
             border-color: #ff69b4;
             transform: scale(1.06);
-            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.5);
+            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);
         }
 
         .btn-creditos {
-            background-color: rgba(221, 160, 221, 0.25); /* Lila translúcido */
-            border-color: rgba(255, 255, 255, 0.6);
+            background-color: rgba(221, 160, 221, 0.3);
         }
 
         .btn-creditos:hover {
-            background-color: rgba(186, 85, 211, 0.6);
+            background-color: rgba(186, 85, 211, 0.7);
             border-color: #dda0dd;
         }
 
-        /* Control de música discreto en la esquina superior o abajo */
+        /* Control de música integrado y discreto */
         .musica-control {
-            position: absolute;
-            bottom: 25px;
-            background: rgba(0, 0, 0, 0.5);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: #fff;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 14px;
+            padding: 6px 16px;
+            border-radius: 18px;
+            font-size: 13px;
             cursor: pointer;
-            backdrop-filter: blur(5px);
             transition: 0.3s;
-            z-index: 2;
         }
 
         .musica-control:hover {
@@ -160,18 +157,17 @@
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Bloque superior centrado: Título grande y botones organizados -->
-    <div class="contenido-superior">
+    <!-- Bloque inferior organizado para dejar los conejitos libres -->
+    <div class="bloque-inferior">
         <h1>I bunny you!</h1>
 
         <div class="btn-container">
             <a href="juego.html" class="btn">Comenzar Aventura 🤍</a>
             <a href="creditos.html" class="btn btn-creditos">Créditos ✨</a>
         </div>
-    </div>
 
-    <!-- Control de música abajo de manera discreta -->
-    <button class="musica-control" onclick="toggleMusica()" id="btnMusica">🎵 Reproducir Música 🤍</button>
+        <button class="musica-control" onclick="toggleMusica()" id="btnMusica">🎵 Reproducir Música 🤍</button>
+    </div>
 
     <script>
         // Generador automático de corazones azules y rosas
