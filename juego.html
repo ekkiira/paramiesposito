@@ -363,12 +363,10 @@
         function cargarNivel() {
             puntos = 0;
             actualizarHUD();
-            conejo.y = (nivel === 1 || nivel === 4) ? 220 : 300;
-            conejo.vy = 0;
-            conejo.enSuelo = true;
+            
             elementos = [];
             obstaculos = [];
-            plataformasMoviles = [];
+            platformsMoviles_reset();
             contadorFrames = 0;
 
             document.getElementById("pantalla-pausa").classList.add("hidden");
@@ -378,6 +376,23 @@
 
             cambiarMensajeRomantico();
             mostrarInstrucciones();
+        }
+
+        function platformsMoviles_reset() {
+            plataformasMoviles = [];
+            if (nivel === 3 || nivel === 5) {
+                // Colocar una plataforma grande justo debajo del conejito al iniciar el nivel 3 y 5
+                conejo.x = 100;
+                conejo.y = 240;
+                conejo.vy = 0;
+                conejo.enSuelo = true;
+                plataformasMoviles.push({ x: 50, y: 325, width: 300, height: 22 });
+            } else {
+                conejo.x = 100;
+                conejo.y = (nivel === 1 || nivel === 4) ? 220 : 300;
+                conejo.vy = 0;
+                conejo.enSuelo = true;
+            }
         }
 
         function reiniciarNivel() {
@@ -437,9 +452,8 @@
                 }
             } 
             else if (nivel === 3) {
-                // Generación de plataformas de madera estables y bien espaciadas
                 if (contadorFrames % 140 === 0) {
-                    let pY = Math.floor(Math.random() * 100) + 210; // Alturas seguras
+                    let pY = Math.floor(Math.random() * 100) + 210;
                     let pW = 150;
                     plataformasMoviles.push({ x: canvas.width, y: pY, width: pW, height: 22 });
                     elementos.push({ x: canvas.width + (pW / 2), y: pY - 40, radius: 18, tipo: 'rosa' });
@@ -463,9 +477,8 @@
                 }
             }
 
-            // Física robusta para plataformas en Nivel 3 y 5
+            // Física para plataformas en Nivel 3 y 5
             if (nivel === 3 || nivel === 5) {
-                // Si cae al fondo (espinas), pierde
                 if (conejo.y > canvas.height) {
                     derrotaJuego();
                     return;
@@ -475,12 +488,11 @@
                 for (let plat of plataformasMoviles) {
                     plat.x -= velocidadMundo;
 
-                    // Colisión precisa desde arriba sobre la plataforma
                     if (
                         conejo.x + conejo.width - 25 > plat.x &&
                         conejo.x + 25 < plat.x + plat.width &&
                         conejo.y + conejo.height >= plat.y &&
-                        conejo.y + conejo.height <= plat.y + 18 &&
+                        conejo.y + conejo.height <= plat.y + 20 &&
                         conejo.vy >= 0
                     ) {
                         conejo.y = plat.y - conejo.height;
@@ -490,7 +502,7 @@
                 }
             }
 
-            // Movimiento y recolección de corazones
+            // Recolección de corazones
             for (let i = elementos.length - 1; i >= 0; i--) {
                 elementos[i].x -= velocidadMundo;
                 let dx = (conejo.x + conejo.width/2) - elementos[i].x;
@@ -512,7 +524,7 @@
                 }
             }
 
-            // Movimiento y colisión de obstáculos (Rocas / Tubos)
+            // Obstáculos
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
@@ -528,6 +540,13 @@
 
                 if (obstaculos[i].x < -60) {
                     obstaculos.splice(i, 1);
+                }
+            }
+
+            // Limpiar plataformas fuera de pantalla
+            for (let i = plataformasMoviles.length - 1; i >= 0; i--) {
+                if (plataformasMoviles[i].x + plataformasMoviles[i].width < -50) {
+                    plataformasMoviles.splice(i, 1);
                 }
             }
         }
@@ -579,11 +598,10 @@
                 ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Dibujar suelo inferior o espinas según el nivel
+            // Suelo o espinas
             if (nivel === 3 || nivel === 5) {
                 ctx.fillStyle = "#b71c1c";
                 ctx.fillRect(0, 450, canvas.width, 50);
-                // Dibujar espinas decorativas en el suelo inferior
                 ctx.fillStyle = "#ff5252";
                 for (let ex = 0; ex < canvas.width; ex += 25) {
                     ctx.beginPath();
@@ -599,7 +617,7 @@
                 ctx.fillRect(0, 380, canvas.width, 10);
             }
 
-            // Dibujar plataformas móviles / flotantes
+            // Plataformas
             for (let plat of plataformasMoviles) {
                 ctx.fillStyle = "#d7ccc8";
                 ctx.strokeStyle = "#6d4c41";
@@ -608,7 +626,7 @@
                 ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
             }
 
-            // Dibujar corazones
+            // Corazones
             for (let el of elementos) {
                 ctx.font = "32px sans-serif";
                 ctx.textAlign = "center";
@@ -617,7 +635,7 @@
                 ctx.fillText(simboloCorazon, el.x, el.y);
             }
 
-            // Dibujar obstáculos
+            // Obstáculos
             for (let o of obstaculos) {
                 if (o.tipo === 'tubo_arriba' || o.tipo === 'tubo_abajo') {
                     ctx.fillStyle = "#ffb6c1";
