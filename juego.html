@@ -274,7 +274,6 @@
             el.innerText = randomMsg;
         }
 
-        // Evento de teclado
         window.addEventListener("keydown", e => { 
             intentarReproducirMusica();
             if (e.code === "Space" || e.code === "ArrowUp") { 
@@ -285,9 +284,7 @@
             }
         });
 
-        // Eventos táctiles y de clic mejorados para respuesta inmediata en celular
         window.addEventListener("touchstart", (e) => {
-            // Evitamos que haga zoom o scroll por accidente en móviles
             if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
                 e.preventDefault();
             }
@@ -420,10 +417,12 @@
 
             if (nivel === 1) {
                 if (contadorFrames % 120 === 0) {
-                    let alturaH = Math.floor(Math.random() * 130) + 60;
+                    // Espacio libre amplio de 200 píxeles para pasar sin problemas
+                    let espacioLibre = 200;
+                    let alturaH = Math.floor(Math.random() * 110) + 50;
                     obstaculos.push({ x: canvas.width, y: 0, width: 55, height: alturaH, tipo: 'tubo_arriba' });
-                    obstaculos.push({ x: canvas.width, y: alturaH + 150, width: 55, height: canvas.height - (alturaH + 150), tipo: 'tubo_abajo' });
-                    elementos.push({ x: canvas.width + 25, y: alturaH + 75, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
+                    obstaculos.push({ x: canvas.width, y: alturaH + espacioLibre, width: 55, height: canvas.height - (alturaH + espacioLibre), tipo: 'tubo_abajo' });
+                    elementos.push({ x: canvas.width + 25, y: alturaH + (espacioLibre / 2), radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
                 }
             } 
             else if (nivel === 2) {
@@ -446,10 +445,12 @@
             } 
             else if (nivel === 4) {
                 if (contadorFrames % 80 === 0) {
-                    let alturaH = Math.floor(Math.random() * 120) + 70;
+                    // Espacio libre amplio de 190 píxeles en el nivel rápido
+                    let espacioLibre = 190;
+                    let alturaH = Math.floor(Math.random() * 100) + 60;
                     obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
-                    obstaculos.push({ x: canvas.width, y: alturaH + 145, width: 50, height: canvas.height - (alturaH + 145), tipo: 'tubo_abajo' });
-                    elementos.push({ x: canvas.width + 25, y: alturaH + 72, radius: 18, tipo: 'azul' });
+                    obstaculos.push({ x: canvas.width, y: alturaH + espacioLibre, width: 50, height: canvas.height - (alturaH + espacioLibre), tipo: 'tubo_abajo' });
+                    elementos.push({ x: canvas.width + 25, y: alturaH + (espacioLibre / 2), radius: 18, tipo: 'azul' });
                 }
             } 
             else if (nivel === 5) {
