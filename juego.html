@@ -29,7 +29,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Esto hace que el fondo abarque absolutamente toda la pantalla sin barras negras */
+            object-fit: cover; /* Llena toda la pantalla sin distorsión */
         }
         #hud {
             position: absolute;
@@ -93,7 +93,8 @@
     <div id="game-container">
         <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
         
-        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        <!-- Resolución optimizada para máxima fluidez y velocidad de respuesta -->
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
 
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="overlay hidden">
@@ -108,7 +109,7 @@
             <img src="Ganadorodenivel.png" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
             <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo mi amor!</p>
-            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡️️</button>
+            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡</button>
         </div>
     </div>
 
@@ -118,7 +119,6 @@
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
-        // Cargar imágenes
         const imgConejo = new Image(); imgConejo.src = "conejitocorriendo.png";
         const fondoDia = new Image(); fondoDia.src = "fondodia.jpg";
         const fondoNoche = new Image(); fondoNoche.src = "fondonoche.jpg";
@@ -129,14 +129,14 @@
         let tiempoCiclo = 0;
 
         let conejo = {
-            x: 120, 
-            y: 480, 
-            width: 130,   
-            height: 130,  
+            x: 100, 
+            y: 280, 
+            width: 100,   
+            height: 100,  
             vy: 0, 
-            gravedad: 0.45, 
-            fuerzaSalto: -13.5, 
-            suelo: 480,  
+            gravedad: 0.55,       // Gravedad ágil para que responda de inmediato al saltar
+            fuerzaSalto: -11.5,   // Salto cómodo
+            suelo: 280,  
             enSuelo: false
         };
 
@@ -216,18 +216,19 @@
                 conejo.enSuelo = false;
             }
 
-            let velocidadMundo = 3 + (nivel * 0.4);
+            // Velocidad moderada y muy suave
+            let velocidadMundo = 3.2 + (nivel * 0.3);
             contadorFrames++;
 
-            // Generar zanahorias a intervalos cómodos y alcanzables
-            if (contadorFrames % 130 === 0) {
-                let alturaZanahoria = Math.random() > 0.4 ? 520 : 360; 
-                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 22, valor: 20 });
+            // Frecuencia amplia para zanahorias fáciles de atrapar
+            if (contadorFrames % 120 === 0) {
+                let alturaZanahoria = Math.random() > 0.4 ? 310 : 200; 
+                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 18, valor: 20 });
             }
 
-            // Generar obstáculos muy fáciles de saltar y espaciados
-            if (contadorFrames % 180 === 0) {
-                obstaculos.push({ x: canvas.width + 50, y: 530, width: 45, height: 80 });
+            // Obstáculos más separados y bajitos para saltar sin frustración
+            if (contadorFrames % 190 === 0) {
+                obstaculos.push({ x: canvas.width + 50, y: 315, width: 35, height: 55 });
             }
 
             // Mover y verificar zanahorias
@@ -236,7 +237,7 @@
                 
                 let dx = (conejo.x + conejo.width/2) - zanahorias[i].x;
                 let dy = (conejo.y + conejo.height/2) - zanahorias[i].y;
-                if (Math.hypot(dx, dy) < 65) {
+                if (Math.hypot(dx, dy) < 55) {
                     puntos += zanahorias[i].valor;
                     zanahorias.splice(i, 1);
                     actualizarHUD();
@@ -258,14 +259,14 @@
                 }
             }
 
-            // Mover y verificar obstáculos con hitbox muy noble
+            // Hitbox muy noble (permite un pequeño margen de error al saltar)
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
                 if (
-                    conejo.x + 30 < obstaculos[i].x + obstaculos[i].width &&
-                    conejo.x + conejo.width - 30 > obstaculos[i].x &&
-                    conejo.y + conejo.height > obstaculos[i].y + 20
+                    conejo.x + 22 < obstaculos[i].x + obstaculos[i].width &&
+                    conejo.x + conejo.width - 22 > obstaculos[i].x &&
+                    conejo.y + conejo.height > obstaculos[i].y + 15
                 ) {
                     juegoActivo = false;
                     document.getElementById("pantalla-derrota").classList.remove("hidden");
@@ -295,13 +296,13 @@
                 ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
                 ctx.fillStyle = "#ff7f00";
                 ctx.fill();
-                ctx.lineWidth = 3;
+                ctx.lineWidth = 2.5;
                 ctx.strokeStyle = "#fff";
                 ctx.stroke();
                 ctx.closePath();
 
                 ctx.fillStyle = "#228b22";
-                ctx.fillRect(z.x - 5, z.y - z.radius - 12, 10, 12);
+                ctx.fillRect(z.x - 4, z.y - z.radius - 10, 8, 10);
             }
 
             // Dibujar obstáculos
@@ -309,7 +310,7 @@
                 ctx.fillStyle = "#8b4513";
                 ctx.fillRect(o.x, o.y, o.width, o.height);
                 ctx.fillStyle = "#5c2c16";
-                ctx.fillRect(o.x + 6, o.y + 6, o.width - 12, 14);
+                ctx.fillRect(o.x + 4, o.y + 4, o.width - 8, 10);
             }
 
             // Dibujar conejito
