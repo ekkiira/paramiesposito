@@ -41,7 +41,6 @@
             text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
         }
-        /* Estilo para el botón de pausa flotante */
         #btn-pausa {
             position: absolute;
             top: 22px;
@@ -114,13 +113,12 @@
     <div id="game-container">
         <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
         
-        <!-- Botón de Pausa -->
         <button id="btn-pausa" onclick="alternarPausa()">⏸ Pausa</button>
 
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
-        <!-- Elemento de Música de Fondo (Asegúrate de subir tu archivo musica.mp3) -->
-        <audio id="musicaFondo" src="musica.mp3" loop></audio>
+        <!-- Audio de fondo -->
+        <audio id="musicaFondo" src="musica.mp3" preload="auto" loop></audio>
 
         <!-- Pantalla de Pausa -->
         <div id="pantalla-pausa" class="overlay hidden">
@@ -137,7 +135,7 @@
             <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
         </div>
 
-        <!-- Pantalla de Victoria de Nivel con respaldo de imagen -->
+        <!-- Pantalla de Victoria -->
         <div id="pantalla-victoria" class="overlay hidden">
             <img src="ganadordenivel.png" onerror="this.onerror=null; this.src='ganadordenivel.jpg';" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
@@ -169,8 +167,8 @@
             width: 100,   
             height: 100,  
             vy: 0, 
-            gravedad: 0.6,        
-            fuerzaSalto: -12,     
+            gravedad: 0.65,       // Gravedad un poco más firme para saltos ágiles
+            fuerzaSalto: -12.5,   // Salto más responsivo
             suelo: 280,  
             enSuelo: false
         };
@@ -179,7 +177,15 @@
         let obstaculos = []; 
         let contadorFrames = 0;
 
+        function intentarReproducirMusica() {
+            if (musica.paused && juegoActivo && !estaPausado) {
+                musica.volume = 0.4;
+                musica.play().catch(e => {});
+            }
+        }
+
         window.addEventListener("keydown", e => { 
+            intentarReproducirMusica();
             if (e.code === "Space") { 
                 e.preventDefault(); 
                 saltar(); 
@@ -187,7 +193,11 @@
                 alternarPausa();
             }
         });
-        canvas.addEventListener("click", () => saltar());
+
+        canvas.addEventListener("click", () => {
+            intentarReproducirMusica();
+            saltar();
+        });
 
         function saltar() {
             if (!juegoActivo || estaPausado) return;
@@ -198,7 +208,7 @@
         }
 
         function alternarPausa() {
-            if (!juegoActivo && !estaPausado) return; // No pausar si está en game over o victoria
+            if (!juegoActivo && !estaPausado) return; 
 
             estaPausado = !estaPausado;
             const pantallaPausa = document.getElementById("pantalla-pausa");
@@ -211,7 +221,7 @@
             } else {
                 pantallaPausa.classList.add("hidden");
                 btnPausa.innerText = "⏸ Pausa";
-                musica.play().catch(e => console.log("Audio play prevented:", e));
+                musica.play().catch(e => {});
                 loop();
             }
         }
@@ -239,9 +249,8 @@
             document.getElementById("pantalla-victoria").classList.add("hidden");
             document.getElementById("btn-pausa").innerText = "⏸ Pausa";
 
-            // Intentar reproducir música al iniciar el nivel
-            musica.volume = 0.4; // Volumen agradable (40%)
-            musica.play().catch(e => console.log("El navegador requiere interacción para reproducir audio."));
+            musica.volume = 0.4;
+            musica.play().catch(e => {});
             
             loop();
         }
@@ -280,15 +289,16 @@
                 conejo.enSuelo = false;
             }
 
-            let velocidadMundo = 3.8 + (nivel * 0.4);
+            // VELOCIDAD AUMENTADA: Mucho más dinámico y rápido desde el nivel 1
+            let velocidadMundo = 6.0 + (nivel * 0.7);
             contadorFrames++;
 
-            if (contadorFrames % 110 === 0) {
+            if (contadorFrames % 75 === 0) {
                 let alturaZanahoria = Math.random() > 0.4 ? 310 : 200; 
                 zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 18, valor: 20 });
             }
 
-            if (contadorFrames % 170 === 0) {
+            if (contadorFrames % 110 === 0) {
                 obstaculos.push({ x: canvas.width + 50, y: 315, width: 35, height: 55 });
             }
 
