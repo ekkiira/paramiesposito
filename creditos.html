@@ -18,68 +18,98 @@
             align-items: center;
         }
 
-        /* Contenedor principal de la escena estilo cine */
+        /* Contenedor de corazones flotantes de fondo */
+        #corazones-fondo {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .corazon-flotante {
+            position: absolute;
+            color: #1e90ff; /* Corazones azules */
+            font-size: 24px;
+            animation: flotarUp 6s linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes flotarUp {
+            0% {
+                transform: translateY(105vh) scale(0.8) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Contenedor principal estilo cine */
         #cine-container {
             position: relative;
             width: 100%;
             height: 100%;
-            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 2;
         }
 
-        /* Cada sección o "escena" de créditos que aparecerá una por una */
         .escena {
             position: absolute;
             width: 80%;
             max-width: 600px;
             text-align: center;
             opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 1.2s ease-in-out, transform 1.2s ease-in-out;
+            transform: scale(0.9) translateY(20px);
+            transition: opacity 1.5s ease-in-out, transform 1.5s ease-in-out;
             pointer-events: none;
         }
 
         .escena.activa {
             opacity: 1;
-            transform: translateY(0);
+            transform: scale(1) translateY(0);
             pointer-events: auto;
         }
 
         .escena img {
-            width: 240px;
-            height: 240px;
+            width: 250px;
+            height: 250px;
             object-fit: cover;
             border-radius: 20px;
-            border: 3px solid #ffb6c1;
-            box-shadow: 0 10px 30px rgba(255, 182, 193, 0.3);
+            border: 3px solid #1e90ff;
+            box-shadow: 0 10px 30px rgba(30, 144, 255, 0.4);
             margin-bottom: 25px;
         }
 
         h1 {
-            color: #ffb6c1;
-            font-size: 34px;
+            color: #1e90ff;
+            font-size: 38px;
             margin-bottom: 15px;
-            text-shadow: 0 2px 10px rgba(255, 182, 193, 0.4);
+            text-shadow: 0 2px 15px rgba(30, 144, 255, 0.5);
+            letter-spacing: 1px;
         }
 
         p {
-            font-size: 20px;
+            font-size: 22px;
             line-height: 1.6;
             color: #e0e0e0;
             margin-bottom: 25px;
         }
 
-        .corazon {
-            color: #ff4d4d;
-            font-size: 26px;
-            animation: latido 1.2s infinite;
-            display: inline-block;
-        }
-
         .btn {
-            background-color: #ffb6c1;
+            background-color: #1e90ff;
             color: white;
             border: none;
             padding: 14px 35px;
@@ -87,93 +117,98 @@
             border-radius: 35px;
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 4px 15px rgba(255, 182, 193, 0.4);
+            box-shadow: 0 4px 15px rgba(30, 144, 255, 0.4);
             text-decoration: none;
             transition: 0.3s;
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .btn:hover {
-            background-color: #ff69b4;
+            background-color: #00bfff;
             transform: scale(1.08);
-            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.6);
-        }
-
-        @keyframes latido {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.25); }
-        }
-
-        /* Indicador sutil para cambiar de escena */
-        #instruccion {
-            position: absolute;
-            bottom: 30px;
-            font-size: 14px;
-            color: rgba(255, 255, 255, 0.5);
-            letter-spacing: 1px;
-            animation: parpadeo 2s infinite;
-        }
-
-        @keyframes parpadeo {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
+            box-shadow: 0 6px 20px rgba(0, 191, 255, 0.6);
         }
     </style>
 </head>
 <body>
 
-    <div id="cine-container" onclick="siguienteEscena()">
+    <!-- Fondo de corazones flotantes -->
+    <div id="corazones-fondo"></div>
+
+    <div id="cine-container">
         
         <!-- Escena 1 -->
         <div class="escena activa">
             <img src="imagencreditos1.jpg" alt="Créditos 1">
-            <h1>¡Lo lograste, mi vida!</h1>
-            <p>Has completado todos los niveles con éxito <span class="corazon">❤️</span></p>
+            <h1>Eres el amor de mi vida</h1>
+            <p>💙</p>
         </div>
 
         <!-- Escena 2 -->
         <div class="escena">
             <img src="imagencreditos2.jpg" alt="Créditos 2">
-            <h1>Nuestra Aventura</h1>
-            <p>Cada obstáculo saltado y cada risa compartida a tu lado es mi momento favorito del día.</p>
+            <h1>Mi esposo</h1>
+            <p>💙</p>
         </div>
 
         <!-- Escena 3 -->
         <div class="escena">
             <img src="imagencreditos3.jpg" alt="Créditos 3">
-            <h1>Jugador Estrella</h1>
-            <p>Gracias por ser tan increíble, por tu paciencia y por llenar mi vida de tanta felicidad.</p>
+            <h1>Mi alma gemela</h1>
+            <p>💙</p>
         </div>
 
         <!-- Escena 4 (Final) -->
         <div class="escena">
             <img src="fin.jpg" alt="Fin">
-            <h1>Fin... o más bien, Continuará <span class="corazon">❤️</span></h1>
-            <p>Eres mi jugador favorito por siempre y para siempre.</p>
-            <a href="juego.html" class="btn" onclick="event.stopPropagation();">Jugar de nuevo 🎮</a>
+            <h1>Te amo con todo mi corazón Husbunny</h1>
+            <a href="juego.html" class="btn">Jugar de nuevo 🎮</a>
         </div>
 
     </div>
 
-    <div id="instruccion">Da clic en cualquier parte para avanzar 🎬</div>
-
     <script>
+        // Generador automático de corazones azules flotantes de fondo
+        function crearCorazonFondo() {
+            const contenedor = document.getElementById("corazones-fondo");
+            const corazon = document.createElement("div");
+            corazon.classList.add("corazon-flotante");
+            corazon.innerHTML = Math.random() > 0.5 ? "💙" : "✨";
+            
+            corazon.style.left = Math.random() * 100 + "vw";
+            corazon.style.animationDuration = (Math.random() * 3 + 4) + "s"; // entre 4 y 7 segundos
+            corazon.style.fontSize = (Math.random() * 15 + 18) + "px";
+
+            contenedor.appendChild(corazon);
+
+            setTimeout(() => {
+                corazon.remove();
+            }, 7000);
+        }
+
+        setInterval(crearCorazonFondo, 400);
+
+        // Sucesión automática de créditos estilo película
         let escenaActual = 0;
         const escenas = document.querySelectorAll(".escena");
+        const tiempoPorEscena = 4500; // 4.5 segundos por cada escena
 
-        function siguienteEscena() {
+        function cambiarEscenaCinematografica() {
             escenas[escenaActual].classList.remove("activa");
             escenaActual++;
 
             if (escenaActual < escenas.length) {
                 escenas[escenaActual].classList.add("activa");
             } else {
-                // Si llega al final, se queda en la última escena o reinicia el ciclo
+                // Se detiene en la última escena para que pueda dar clic en el botón de "Jugar de nuevo"
                 escenaActual = escenas.length - 1;
                 escenas[escenaActual].classList.add("activa");
+                clearInterval(intervaloPelicula);
             }
         }
+
+        let intervaloPelicula = setInterval(cambiarEscenaCinematografica, tiempoPorEscena);
     </script>
 
 </body>
