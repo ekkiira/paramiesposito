@@ -228,7 +228,7 @@
             height: 85, 
             vy: 0, 
             gravedad: 0.5, 
-            fuerzaSalto: -10.0, 
+            fuerzaSalto: -10.5, 
             suelo: 340, 
             enSuelo: false
         };
@@ -256,7 +256,7 @@
             },
             3: {
                 titulo: "Nivel 3: Escalada en las Alturas",
-                texto: "• <b>Objetivo:</b> ¡Cuidado abajo! El suelo tiene espinas.<br>• <b>Cómo jugar:</b> Salta y muévete sobre las <b>plataformas flotantes de madera</b>.<br>• <b>Meta:</b> Alcanza 100 puntos."
+                texto: "• <b>Objetivo:</b> ¡Cuidado abajo! El suelo tiene espinas.<br>• <b>Cómo jugar:</b> Salta con precisión sobre las <b>plataformas flotantes de madera</b>.<br>• <b>Meta:</b> Alcanza 100 puntos."
             },
             4: {
                 titulo: "Nivel 4: Lluvia Estelar Rápida",
@@ -264,7 +264,7 @@
             },
             5: {
                 titulo: "Nivel 5: El Reto Final de Amor",
-                texto: "• <b>Objetivo:</b> ¡La prueba definitiva de la aventura!<br>• <b>Cómo jugar:</b> Combina plataformas móviles y reflejos.<br>• <b>Meta:</b> ¡Completa los 100 puntos finales para ganar!"
+                texto: "• <b>Objetivo:</b> ¡La prueba definitiva de la aventura!<br>• <b>Cómo jugar:</b> Combina plataformas flotantes y reflejos.<br>• <b>Meta:</b> ¡Completa los 100 puntos finales para ganar!"
             }
         };
 
@@ -402,17 +402,20 @@
             if (!juegoActivo || estaPausado || esperandoInicio) return;
 
             contadorFrames++;
-            let velocidadMundo = 4.8 + (nivel * 0.4);
+            let velocidadMundo = 4.8 + (nivel * 0.35);
 
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
-            if (conejo.y >= conejo.suelo) {
-                conejo.y = conejo.suelo;
-                conejo.vy = 0;
-                conejo.enSuelo = true;
-            } else {
-                conejo.enSuelo = false;
+            // Suelo base del nivel 1, 2 y 4
+            if (nivel !== 3 && nivel !== 5) {
+                if (conejo.y >= conejo.suelo) {
+                    conejo.y = conejo.suelo;
+                    conejo.vy = 0;
+                    conejo.enSuelo = true;
+                } else {
+                    conejo.enSuelo = false;
+                }
             }
 
             if (nivel === 1) {
@@ -425,24 +428,21 @@
                 }
             } 
             else if (nivel === 2) {
-                // Obstáculos mucho más espaciados (cada 150 frames en lugar de 95) para dar tiempo a verlos y saltarlos
                 if (contadorFrames % 150 === 0) {
                     obstaculos.push({ x: canvas.width, y: 350, width: 35, height: 35, tipo: 'roca' });
                 }
-                // Corazones distribuidos de forma justa y alcanzable
                 if (contadorFrames % 80 === 0) {
                     let alturaCorazon = Math.random() > 0.5 ? 260 : 300;
                     elementos.push({ x: canvas.width, y: alturaCorazon, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
                 }
             } 
             else if (nivel === 3) {
-                if (contadorFrames % 130 === 0) {
-                    let pY = Math.floor(Math.random() * 120) + 190;
-                    plataformasMoviles.push({ x: canvas.width, y: pY, width: 130, height: 20 });
-                    elementos.push({ x: canvas.width + 45, y: pY - 35, radius: 18, tipo: 'rosa' });
-                }
-                if (contadorFrames % 160 === 0) {
-                    obstaculos.push({ x: canvas.width, y: 375, width: 60, height: 15, tipo: 'espinas' });
+                // Generación de plataformas de madera estables y bien espaciadas
+                if (contadorFrames % 140 === 0) {
+                    let pY = Math.floor(Math.random() * 100) + 210; // Alturas seguras
+                    let pW = 150;
+                    plataformasMoviles.push({ x: canvas.width, y: pY, width: pW, height: 22 });
+                    elementos.push({ x: canvas.width + (pW / 2), y: pY - 40, radius: 18, tipo: 'rosa' });
                 }
             } 
             else if (nivel === 4) {
@@ -455,26 +455,32 @@
                 }
             } 
             else if (nivel === 5) {
-                if (contadorFrames % 100 === 0) {
-                    let pY = Math.floor(Math.random() * 130) + 180;
-                    plataformasMoviles.push({ x: canvas.width, y: pY, width: 110, height: 18 });
-                    elementos.push({ x: canvas.width + 35, y: pY - 35, radius: 18, tipo: 'rosa' });
-                    obstaculos.push({ x: canvas.width + 120, y: pY - 40, width: 30, height: 30, tipo: 'espinas' });
+                if (contadorFrames % 120 === 0) {
+                    let pY = Math.floor(Math.random() * 110) + 200;
+                    let pW = 130;
+                    plataformasMoviles.push({ x: canvas.width, y: pY, width: pW, height: 20 });
+                    elementos.push({ x: canvas.width + (pW / 2), y: pY - 40, radius: 18, tipo: 'rosa' });
                 }
             }
 
+            // Física robusta para plataformas en Nivel 3 y 5
             if (nivel === 3 || nivel === 5) {
-                if (conejo.y >= conejo.suelo) {
+                // Si cae al fondo (espinas), pierde
+                if (conejo.y > canvas.height) {
                     derrotaJuego();
                     return;
                 }
+
+                conejo.enSuelo = false;
                 for (let plat of plataformasMoviles) {
                     plat.x -= velocidadMundo;
+
+                    // Colisión precisa desde arriba sobre la plataforma
                     if (
-                        conejo.x + conejo.width - 20 > plat.x &&
-                        conejo.x + 20 < plat.x + plat.width &&
+                        conejo.x + conejo.width - 25 > plat.x &&
+                        conejo.x + 25 < plat.x + plat.width &&
                         conejo.y + conejo.height >= plat.y &&
-                        conejo.y + conejo.height <= plat.y + 15 &&
+                        conejo.y + conejo.height <= plat.y + 18 &&
                         conejo.vy >= 0
                     ) {
                         conejo.y = plat.y - conejo.height;
@@ -484,6 +490,7 @@
                 }
             }
 
+            // Movimiento y recolección de corazones
             for (let i = elementos.length - 1; i >= 0; i--) {
                 elementos[i].x -= velocidadMundo;
                 let dx = (conejo.x + conejo.width/2) - elementos[i].x;
@@ -505,6 +512,7 @@
                 }
             }
 
+            // Movimiento y colisión de obstáculos (Rocas / Tubos)
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
@@ -571,19 +579,36 @@
                 ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            ctx.fillStyle = (nivel === 2) ? "#142814" : "#2e7d32";
-            ctx.fillRect(0, 380, canvas.width, 120);
-            ctx.fillStyle = "#8d5524";
-            ctx.fillRect(0, 380, canvas.width, 10);
+            // Dibujar suelo inferior o espinas según el nivel
+            if (nivel === 3 || nivel === 5) {
+                ctx.fillStyle = "#b71c1c";
+                ctx.fillRect(0, 450, canvas.width, 50);
+                // Dibujar espinas decorativas en el suelo inferior
+                ctx.fillStyle = "#ff5252";
+                for (let ex = 0; ex < canvas.width; ex += 25) {
+                    ctx.beginPath();
+                    ctx.moveTo(ex, 450);
+                    ctx.lineTo(ex + 12.5, 425);
+                    ctx.lineTo(ex + 25, 450);
+                    ctx.fill();
+                }
+            } else {
+                ctx.fillStyle = (nivel === 2) ? "#142814" : "#2e7d32";
+                ctx.fillRect(0, 380, canvas.width, 120);
+                ctx.fillStyle = "#8d5524";
+                ctx.fillRect(0, 380, canvas.width, 10);
+            }
 
+            // Dibujar plataformas móviles / flotantes
             for (let plat of plataformasMoviles) {
                 ctx.fillStyle = "#d7ccc8";
-                ctx.strokeStyle = "#8d5524";
+                ctx.strokeStyle = "#6d4c41";
                 ctx.lineWidth = 3;
                 ctx.fillRect(plat.x, plat.y, plat.width, plat.height);
                 ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
             }
 
+            // Dibujar corazones
             for (let el of elementos) {
                 ctx.font = "32px sans-serif";
                 ctx.textAlign = "center";
@@ -592,6 +617,7 @@
                 ctx.fillText(simboloCorazon, el.x, el.y);
             }
 
+            // Dibujar obstáculos
             for (let o of obstaculos) {
                 if (o.tipo === 'tubo_arriba' || o.tipo === 'tubo_abajo') {
                     ctx.fillStyle = "#ffb6c1";
@@ -599,16 +625,6 @@
                     ctx.strokeStyle = "#fff";
                     ctx.lineWidth = 3;
                     ctx.strokeRect(o.x, o.y, o.width, o.height);
-                } else if (o.tipo === 'espinas') {
-                    ctx.fillStyle = "#b71c1c";
-                    ctx.beginPath();
-                    let wEspina = 12;
-                    for (let ex = o.x; ex < o.x + o.width; ex += wEspina) {
-                        ctx.moveTo(ex, o.y + o.height);
-                        ctx.lineTo(ex + wEspina/2, o.y);
-                        ctx.lineTo(ex + wEspina, o.y + o.height);
-                    }
-                    ctx.fill();
                 } else {
                     ctx.fillStyle = "#6d4c41";
                     ctx.beginPath();
