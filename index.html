@@ -15,13 +15,13 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end;
+            justify-content: flex-end; /* Lo manda totalmente al fondo */
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             text-align: center;
             box-sizing: border-box;
-            padding: 25px 20px;
+            padding-bottom: 20px; /* Margen inferior seguro */
             overflow: hidden;
             position: relative;
         }
@@ -38,21 +38,21 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 999;
-            animation: desvanecerIntro 1s ease 2.5s forwards;
+            z-index: 9999;
+            animation: desvanecerIntro 0.8s ease 2s forwards;
         }
 
         .intro-contenido {
-            font-size: 40px;
+            font-size: 50px;
             display: flex;
             align-items: center;
             gap: 15px;
-            animation: latidoIntro 1.5s ease-in-out infinite;
+            animation: latidoIntro 1.2s ease-in-out infinite;
         }
 
         @keyframes latidoIntro {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+            50% { transform: scale(1.15); }
         }
 
         @keyframes desvanecerIntro {
@@ -70,15 +70,15 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(11, 11, 11, 0.92);
+            background-color: rgba(11, 11, 11, 0.95);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 1000;
+            z-index: 10000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.4s ease;
+            transition: opacity 0.3s ease;
         }
 
         #loading-overlay.activo {
@@ -87,14 +87,14 @@
         }
 
         .loading-conejo {
-            font-size: 55px;
-            animation: saltoConejo 0.6s infinite alternate;
+            font-size: 60px;
+            animation: saltoConejo 0.5s infinite alternate;
             margin-bottom: 15px;
         }
 
         @keyframes saltoConejo {
             0% { transform: translateY(0); }
-            100% { transform: translateY(-20px); }
+            100% { transform: translateY(-25px); }
         }
 
         .loading-texto {
@@ -137,41 +137,41 @@
             }
         }
 
-        /* Bloque inferior */
+        /* Bloque inferior pegado a la parte baja para no estorbar a los conejitos */
         .bloque-inferior {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            background: rgba(0, 0, 0, 0.35);
-            padding: 20px 30px;
-            border-radius: 25px;
-            backdrop-filter: blur(8px);
+            gap: 10px;
+            margin-bottom: 5px;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 12px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(6px);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
         }
 
         h1 {
-            font-size: 40px;
+            font-size: 32px;
             margin: 0;
             font-weight: 800;
-            letter-spacing: 1.5px;
+            letter-spacing: 1px;
             color: #ffffff;
-            text-shadow: 0 3px 15px rgba(255, 105, 180, 0.7), 0 0 30px rgba(30, 144, 255, 0.5);
+            text-shadow: 0 3px 12px rgba(255, 105, 180, 0.7), 0 0 25px rgba(30, 144, 255, 0.5);
             animation: latidoTitulo 2s ease-in-out infinite;
         }
 
         @keyframes latidoTitulo {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.04); }
+            50% { transform: scale(1.03); }
         }
 
         .btn-container {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -179,14 +179,14 @@
         .btn {
             background-color: rgba(255, 182, 193, 0.3);
             color: #fff;
-            padding: 10px 22px;
-            font-size: 15px;
+            padding: 8px 18px;
+            font-size: 14px;
             border: 2px solid rgba(255, 255, 255, 0.7);
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
             text-decoration: none;
             font-weight: 600;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
@@ -194,8 +194,8 @@
         .btn:hover {
             background-color: rgba(255, 105, 180, 0.7);
             border-color: #ff69b4;
-            transform: scale(1.06);
-            box-shadow: 0 6px 15px rgba(255, 105, 180, 0.5);
+            transform: scale(1.05);
+            box-shadow: 0 5px 12px rgba(255, 105, 180, 0.5);
         }
 
         .btn-creditos {
@@ -211,9 +211,9 @@
             background: rgba(255, 255, 255, 0.15);
             border: 1px solid rgba(255, 255, 255, 0.4);
             color: #fff;
-            padding: 6px 16px;
-            border-radius: 18px;
-            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
             cursor: pointer;
             transition: 0.3s;
         }
@@ -248,7 +248,7 @@
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Bloque inferior ordenado -->
+    <!-- Bloque inferior compacto y abajo para no invadir -->
     <div class="bloque-inferior">
         <h1>I bunny you!</h1>
 
@@ -285,11 +285,10 @@
 
         // Función de carga Kawaii al hacer clic en Comenzar Aventura
         function iniciarCarga(event, destino) {
-            event.preventDefault(); // Evita que abra de golpe
+            event.preventDefault();
             const loadingOverlay = document.getElementById("loading-overlay");
             loadingOverlay.classList.add("activo");
 
-            // Simula un breve momento de carga kawaii (1.5 segundos) y luego redirige
             setTimeout(() => {
                 window.location.href = destino;
             }, 1500);
