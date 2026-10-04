@@ -29,7 +29,7 @@
             display: block;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Llena toda la pantalla sin distorsión */
+            object-fit: cover;
         }
         #hud {
             position: absolute;
@@ -93,7 +93,6 @@
     <div id="game-container">
         <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
         
-        <!-- Resolución optimizada para máxima fluidez y velocidad de respuesta -->
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
         <!-- Pantalla de Derrota -->
@@ -104,9 +103,9 @@
             <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
         </div>
 
-        <!-- Pantalla de Victoria de Nivel -->
+        <!-- Pantalla de Victoria de Nivel con respaldo de imagen -->
         <div id="pantalla-victoria" class="overlay hidden">
-            <img src="ganadordenivel.png" alt="Ganador">
+            <img src="ganadordenivel.png" onerror="this.onerror=null; this.src='ganadordenivel.jpg';" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
             <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo, mi vida!</p>
             <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡</button>
@@ -134,8 +133,8 @@
             width: 100,   
             height: 100,  
             vy: 0, 
-            gravedad: 0.55,       
-            fuerzaSalto: -11.5,   
+            gravedad: 0.6,        // Ligeramente más ágil para respuesta rápida
+            fuerzaSalto: -12,     // Salto dinámico y cómodo
             suelo: 280,  
             enSuelo: false
         };
@@ -216,15 +215,16 @@
                 conejo.enSuelo = false;
             }
 
-            let velocidadMundo = 3.2 + (nivel * 0.3);
+            // Velocidad del mundo ligeramente incrementada para que vaya más fluido y rápido
+            let velocidadMundo = 3.8 + (nivel * 0.4);
             contadorFrames++;
 
-            if (contadorFrames % 120 === 0) {
+            if (contadorFrames % 110 === 0) {
                 let alturaZanahoria = Math.random() > 0.4 ? 310 : 200; 
                 zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 18, valor: 20 });
             }
 
-            if (contadorFrames % 190 === 0) {
+            if (contadorFrames % 170 === 0) {
                 obstaculos.push({ x: canvas.width + 50, y: 315, width: 35, height: 55 });
             }
 
