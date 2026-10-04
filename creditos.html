@@ -32,7 +32,7 @@
 
         .corazon-flotante {
             position: absolute;
-            color: #1e90ff; /* Corazones azules */
+            color: #1e90ff;
             font-size: 24px;
             animation: flotarUp 6s linear infinite;
             opacity: 0.7;
@@ -43,12 +43,8 @@
                 transform: translateY(105vh) scale(0.8) rotate(0deg);
                 opacity: 0;
             }
-            20% {
-                opacity: 0.8;
-            }
-            80% {
-                opacity: 0.8;
-            }
+            20% { opacity: 0.8; }
+            80% { opacity: 0.8; }
             100% {
                 transform: translateY(-10vh) scale(1.2) rotate(360deg);
                 opacity: 0;
@@ -68,7 +64,7 @@
 
         .escena {
             position: absolute;
-            width: 80%;
+            width: 85%;
             max-width: 600px;
             text-align: center;
             opacity: 0;
@@ -84,18 +80,19 @@
         }
 
         .escena img {
-            width: 250px;
-            height: 250px;
+            width: 240px;
+            height: 240px;
             object-fit: cover;
             border-radius: 20px;
             border: 3px solid #1e90ff;
             box-shadow: 0 10px 30px rgba(30, 144, 255, 0.4);
             margin-bottom: 25px;
+            background-color: #1a1a1a;
         }
 
         h1 {
             color: #1e90ff;
-            font-size: 38px;
+            font-size: 36px;
             margin-bottom: 15px;
             text-shadow: 0 2px 15px rgba(30, 144, 255, 0.5);
             letter-spacing: 1px;
@@ -140,28 +137,25 @@
         
         <!-- Escena 1 -->
         <div class="escena activa">
-            <img src="imagencreditos1.jpg" alt="Créditos 1">
+            <img src="imagencreditos1.jpg" alt="Créditos 1" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\' fill=\'%231e90ff\'>💙</text></svg>';">
             <h1>Eres el amor de mi vida</h1>
-            <p>💙</p>
         </div>
 
         <!-- Escena 2 -->
         <div class="escena">
-            <img src="imagencreditos2.jpg" alt="Créditos 2">
+            <img src="imagencreditos2.jpg" alt="Créditos 2" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\' fill=\'%231e90ff\'>💙</text></svg>';">
             <h1>Mi esposo</h1>
-            <p>💙</p>
         </div>
 
         <!-- Escena 3 -->
         <div class="escena">
-            <img src="imagencreditos3.jpg" alt="Créditos 3">
+            <img src="imagencreditos3.jpg" alt="Créditos 3" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\' fill=\'%231e90ff\'>💙</text></svg>';">
             <h1>Mi alma gemela</h1>
-            <p>💙</p>
         </div>
 
         <!-- Escena 4 (Final) -->
         <div class="escena">
-            <img src="fin.jpg" alt="Fin">
+            <img src="fin.jpg" alt="Fin" onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'240\' height=\'240\'><rect width=\'100%\' height=\'100%\' fill=\'%23111\'/><text x=\'50%\' y=\'50%\' dominant-baseline=\'middle\' text-anchor=\'middle\' font-size=\'60\' fill=\'%231e90ff\'>💙</text></svg>';">
             <h1>Te amo con todo mi corazón Husbunny</h1>
             <a href="juego.html" class="btn">Jugar de nuevo 🎮</a>
         </div>
@@ -169,7 +163,7 @@
     </div>
 
     <script>
-        // Generador automático de corazones azules flotantes de fondo
+        // Generador automático de corazones azules flotantes
         function crearCorazonFondo() {
             const contenedor = document.getElementById("corazones-fondo");
             const corazon = document.createElement("div");
@@ -177,7 +171,7 @@
             corazon.innerHTML = Math.random() > 0.5 ? "💙" : "✨";
             
             corazon.style.left = Math.random() * 100 + "vw";
-            corazon.style.animationDuration = (Math.random() * 3 + 4) + "s"; // entre 4 y 7 segundos
+            corazon.style.animationDuration = (Math.random() * 3 + 4) + "s";
             corazon.style.fontSize = (Math.random() * 15 + 18) + "px";
 
             contenedor.appendChild(corazon);
@@ -201,7 +195,6 @@
             if (escenaActual < escenas.length) {
                 escenas[escenaActual].classList.add("activa");
             } else {
-                // Se detiene en la última escena para que pueda dar clic en el botón de "Jugar de nuevo"
                 escenaActual = escenas.length - 1;
                 escenas[escenaActual].classList.add("activa");
                 clearInterval(intervaloPelicula);
