@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Aventura del Conejito - Juego</title>
     <style>
         body {
@@ -16,6 +16,7 @@
             width: 100vw;
             overflow: hidden;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none;
         }
         #game-container {
             position: relative;
@@ -41,6 +42,7 @@
             font-weight: bold;
             text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
+            pointer-events: none;
         }
         #mensaje-romantico {
             position: absolute;
@@ -52,6 +54,7 @@
             text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
             transition: opacity 0.5s ease;
+            pointer-events: none;
         }
         .controles-superiores {
             position: absolute;
@@ -225,7 +228,7 @@
             height: 85, 
             vy: 0, 
             gravedad: 0.5, 
-            fuerzaSalto: -10.5, 
+            fuerzaSalto: -10.0, 
             suelo: 340, 
             enSuelo: false
         };
@@ -245,23 +248,23 @@
         const datosNiveles = {
             1: {
                 titulo: "Nivel 1: Vuelo de Amor (Modo Flappy Suave)",
-                texto: "• <b>Objetivo:</b> Guía al conejito por los espacios libres.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b>, la <b>Flecha Arriba</b> ⬆️ o haz <b>clic</b> para elevar al conejito con suavidad y evitar los obstáculos.<br>• <b>Meta:</b> Junta 100 puntos en corazones."
+                texto: "• <b>Objetivo:</b> Guía al conejito por los espacios libres.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b>, la <b>Flecha Arriba</b> ⬆️ o toca la pantalla para elevar al conejito con suavidad.<br>• <b>Meta:</b> Junta 100 puntos en corazones."
             },
             2: {
                 titulo: "Nivel 2: Carrera Nocturna de Obstáculos",
-                texto: "• <b>Objetivo:</b> Corre bajo la luz de la luna.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b> o haz <b>clic</b> para saltar las rocas terrestres.<br>• <b>Meta:</b> Atrapa 100 puntos sin tropezar."
+                texto: "• <b>Objetivo:</b> Corre bajo la luz de la luna.<br>• <b>Cómo jugar:</b> Presiona <b>Espacio</b> o toca la pantalla para saltar las rocas terrestres.<br>• <b>Meta:</b> Atrapa 100 puntos sin tropezar."
             },
             3: {
                 titulo: "Nivel 3: Escalada en las Alturas",
-                texto: "• <b>Objetivo:</b> ¡Cuidado abajo! El suelo tiene espinas.<br>• <b>Cómo jugar:</b> Salta y muévete sobre las <b>plataformas flotantes de madera</b> para recolectar corazones.<br>• <b>Meta:</b> Alcanza 100 puntos."
+                texto: "• <b>Objetivo:</b> ¡Cuidado abajo! El suelo tiene espinas.<br>• <b>Cómo jugar:</b> Salta y muévete sobre las <b>plataformas flotantes de madera</b>.<br>• <b>Meta:</b> Alcanza 100 puntos."
             },
             4: {
                 titulo: "Nivel 4: Lluvia Estelar Rápida",
-                texto: "• <b>Objetivo:</b> Cielo nocturno dinámico y veloz.<br>• <b>Cómo jugar:</b> Controla el vuelo del conejito calculando bien cada espacio libre entre los obstáculos rápidos.<br>• <b>Meta:</b> Consigue 100 puntos."
+                texto: "• <b>Objetivo:</b> Cielo nocturno dinámico y veloz.<br>• <b>Cómo jugar:</b> Controla el vuelo del conejito con toques precisos.<br>• <b>Meta:</b> Consigue 100 puntos."
             },
             5: {
                 titulo: "Nivel 5: El Reto Final de Amor",
-                texto: "• <b>Objetivo:</b> ¡La prueba definitiva de la aventura!<br>• <b>Cómo jugar:</b> Combina plataformas móviles y reflejos precisos.<br>• <b>Meta:</b> ¡Completa los 100 puntos finales para ganar!"
+                texto: "• <b>Objetivo:</b> ¡La prueba definitiva de la aventura!<br>• <b>Cómo jugar:</b> Combina plataformas móviles y reflejos.<br>• <b>Meta:</b> ¡Completa los 100 puntos finales para ganar!"
             }
         };
 
@@ -271,7 +274,7 @@
             el.innerText = randomMsg;
         }
 
-        // Control de teclado optimizado para evitar saltos repetitivos automáticos
+        // Evento de teclado
         window.addEventListener("keydown", e => { 
             intentarReproducirMusica();
             if (e.code === "Space" || e.code === "ArrowUp") { 
@@ -282,7 +285,17 @@
             }
         });
 
-        canvas.addEventListener("click", () => {
+        // Eventos táctiles y de clic mejorados para respuesta inmediata en celular
+        window.addEventListener("touchstart", (e) => {
+            // Evitamos que haga zoom o scroll por accidente en móviles
+            if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                e.preventDefault();
+            }
+            intentarReproducirMusica();
+            saltar();
+        }, { passive: false });
+
+        window.addEventListener("click", () => {
             intentarReproducirMusica();
             saltar();
         });
@@ -290,11 +303,9 @@
         function saltar() {
             if (!juegoActivo || estaPausado || esperandoInicio) return;
             
-            // En Nivel 1 y 4 permitimos dar impulso fluido en el aire
             if (nivel === 1 || nivel === 4) {
                 conejo.vy = conejo.fuerzaSalto;
             } else if (conejo.enSuelo) {
-                // En niveles terrestres/plataformas solo salta si está apoyado
                 conejo.vy = conejo.fuerzaSalto;
                 conejo.enSuelo = false;
             }
@@ -396,11 +407,9 @@
             contadorFrames++;
             let velocidadMundo = 4.8 + (nivel * 0.4);
 
-            // Gravedad del conejito
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
-            // Suelo base por defecto
             if (conejo.y >= conejo.suelo) {
                 conejo.y = conejo.suelo;
                 conejo.vy = 0;
@@ -409,19 +418,15 @@
                 conejo.enSuelo = false;
             }
 
-            // --- MECÁNICAS SEGÚN EL NIVEL ---
             if (nivel === 1) {
-                // NIVEL 1: Obstáculos aéreos suaves tipo Flappy
                 if (contadorFrames % 120 === 0) {
                     let alturaH = Math.floor(Math.random() * 130) + 60;
                     obstaculos.push({ x: canvas.width, y: 0, width: 55, height: alturaH, tipo: 'tubo_arriba' });
                     obstaculos.push({ x: canvas.width, y: alturaH + 150, width: 55, height: canvas.height - (alturaH + 150), tipo: 'tubo_abajo' });
-                    
                     elementos.push({ x: canvas.width + 25, y: alturaH + 75, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
                 }
             } 
             else if (nivel === 2) {
-                // NIVEL 2: Obstáculos terrestres
                 if (contadorFrames % 95 === 0) {
                     obstaculos.push({ x: canvas.width, y: 345, width: 40, height: 45, tipo: 'roca' });
                 }
@@ -430,7 +435,6 @@
                 }
             } 
             else if (nivel === 3) {
-                // NIVEL 3: Plataformas con suelo con espinas
                 if (contadorFrames % 130 === 0) {
                     let pY = Math.floor(Math.random() * 120) + 190;
                     plataformasMoviles.push({ x: canvas.width, y: pY, width: 130, height: 20 });
@@ -441,7 +445,6 @@
                 }
             } 
             else if (nivel === 4) {
-                // NIVEL 4: Lluvia estelar / Flappy rápido
                 if (contadorFrames % 80 === 0) {
                     let alturaH = Math.floor(Math.random() * 120) + 70;
                     obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
@@ -450,7 +453,6 @@
                 }
             } 
             else if (nivel === 5) {
-                // NIVEL 5: Reto completo dinámico
                 if (contadorFrames % 100 === 0) {
                     let pY = Math.floor(Math.random() * 130) + 180;
                     plataformasMoviles.push({ x: canvas.width, y: pY, width: 110, height: 18 });
@@ -459,7 +461,6 @@
                 }
             }
 
-            // Colisiones con plataformas móviles (Niveles 3 y 5)
             if (nivel === 3 || nivel === 5) {
                 if (conejo.y >= conejo.suelo) {
                     derrotaJuego();
@@ -481,7 +482,6 @@
                 }
             }
 
-            // Recolectar corazones
             for (let i = elementos.length - 1; i >= 0; i--) {
                 elementos[i].x -= velocidadMundo;
                 let dx = (conejo.x + conejo.width/2) - elementos[i].x;
@@ -503,7 +503,6 @@
                 }
             }
 
-            // Obstáculos
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
@@ -545,7 +544,6 @@
         function dibujar() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Fondos por nivel
             if (nivel === 1) {
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
                 grad.addColorStop(0, "#87CEEB"); grad.addColorStop(1, "#E0F6FF");
@@ -571,13 +569,11 @@
                 ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Suelo
             ctx.fillStyle = (nivel === 2) ? "#142814" : "#2e7d32";
             ctx.fillRect(0, 380, canvas.width, 120);
             ctx.fillStyle = "#8d5524";
             ctx.fillRect(0, 380, canvas.width, 10);
 
-            // Plataformas
             for (let plat of plataformasMoviles) {
                 ctx.fillStyle = "#d7ccc8";
                 ctx.strokeStyle = "#8d5524";
@@ -586,7 +582,6 @@
                 ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
             }
 
-            // Corazones
             for (let el of elementos) {
                 ctx.font = "32px sans-serif";
                 ctx.textAlign = "center";
@@ -595,7 +590,6 @@
                 ctx.fillText(simboloCorazon, el.x, el.y);
             }
 
-            // Obstáculos
             for (let o of obstaculos) {
                 if (o.tipo === 'tubo_arriba' || o.tipo === 'tubo_abajo') {
                     ctx.fillStyle = "#ffb6c1";
@@ -624,7 +618,6 @@
                 }
             }
 
-            // Conejo
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
