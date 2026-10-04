@@ -15,13 +15,13 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Distribuye elementos arriba y abajo */
+            justify-content: space-between;
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             text-align: center;
             box-sizing: border-box;
-            padding: 25px 20px;
+            padding: 20px;
             overflow: hidden;
             position: relative;
         }
@@ -33,7 +33,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: linear-gradient(135deg, #ffb6c1, #87ceeb); /* Fondo degradado rosa con azul */
+            background: linear-gradient(135deg, #ffb6c1, #87ceeb);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -106,7 +106,7 @@
             text-shadow: 0 2px 10px rgba(255, 105, 180, 0.5);
         }
 
-        /* Fondo de corazones flotantes azules y rosas */
+        /* --- CORAZONES FLOTANTES DE FONDO --- */
         #corazones-fondo {
             position: absolute;
             top: 0;
@@ -122,7 +122,7 @@
             position: absolute;
             font-size: 24px;
             animation: flotarUp 6s linear infinite;
-            opacity: 0.8;
+            opacity: 0.85;
         }
 
         @keyframes flotarUp {
@@ -138,15 +138,15 @@
             }
         }
 
-        /* --- TÍTULO ARRIBA PARA NO ESTORBAR --- */
+        /* --- TÍTULO SUPERIOR --- */
         .titulo-superior {
             position: relative;
             z-index: 2;
-            margin-top: 5px;
+            margin-top: 10px;
         }
 
         h1 {
-            font-size: 42px;
+            font-size: 38px;
             margin: 0;
             font-weight: 800;
             letter-spacing: 1.5px;
@@ -160,26 +160,26 @@
             50% { transform: scale(1.04); }
         }
 
-        /* --- MENÚ INFERIOR BONITO Y LIMPIO --- */
+        /* --- MENÚ INFERIOR PEGADO AL BORDE (Sin estorbar a los conejitos) --- */
         .menu-inferior {
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-            background: rgba(255, 255, 255, 0.15); /* Panel translúcido limpio y estético */
-            padding: 18px 30px;
-            border-radius: 25px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+            gap: 10px;
+            margin-bottom: 8px; /* Pegado abajo del todo */
+            background: rgba(0, 0, 0, 0.35); /* Fondo oscuro suave para legibilidad */
+            padding: 12px 25px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.5);
         }
 
         .btn-container {
             display: flex;
-            gap: 15px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
@@ -187,14 +187,14 @@
         .btn {
             background-color: rgba(255, 105, 180, 0.4);
             color: #fff;
-            padding: 11px 24px;
-            font-size: 16px;
+            padding: 9px 20px;
+            font-size: 14px;
             border: 2px solid rgba(255, 255, 255, 0.8);
-            border-radius: 25px;
+            border-radius: 20px;
             cursor: pointer;
             text-decoration: none;
             font-weight: 700;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
@@ -202,8 +202,8 @@
         .btn:hover {
             background-color: rgba(255, 105, 180, 0.8);
             border-color: #fff;
-            transform: scale(1.06);
-            box-shadow: 0 6px 18px rgba(255, 105, 180, 0.6);
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 105, 180, 0.6);
         }
 
         .btn-creditos {
@@ -218,9 +218,9 @@
             background: rgba(255, 255, 255, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.5);
             color: #fff;
-            padding: 6px 18px;
-            border-radius: 18px;
-            font-size: 13px;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
             font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
@@ -248,7 +248,7 @@
         <div class="loading-texto">Preparando la aventura, mi amor... 💖</div>
     </div>
 
-    <!-- Fondo de corazones flotantes azules y rosas -->
+    <!-- Fondo de corazones flotantes azules y rosas restaurado -->
     <div id="corazones-fondo"></div>
 
     <!-- Elemento de audio -->
@@ -256,12 +256,12 @@
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Título colocado arriba de forma limpia -->
+    <!-- Título superior -->
     <div class="titulo-superior">
         <h1>I bunny you!</h1>
     </div>
 
-    <!-- Menú inferior elegante, con botones lindos y sin tapar a los conejitos -->
+    <!-- Menú inferior en la base sin invadir los conejitos -->
     <div class="menu-inferior">
         <div class="btn-container">
             <a href="#" class="btn" onclick="iniciarCarga(event, 'juego.html')">Comenzar Aventura 🤍</a>
@@ -272,9 +272,10 @@
     </div>
 
     <script>
-        // Generador automático de corazones azules y rosas
+        // Generador automático de corazones azules y rosas corregido y activo
         function crearCorazonFondo() {
             const contenedor = document.getElementById("corazones-fondo");
+            if (!contenedor) return;
             const corazon = document.createElement("div");
             corazon.classList.add("corazon-flotante");
             
@@ -292,7 +293,8 @@
             }, 7000);
         }
 
-        setInterval(crearCorazonFondon, 400);
+        // Llamada activa para generar los corazones flotantes constantemente
+        setInterval(crearCorazonFondo, 400);
 
         // Función de carga Kawaii al hacer clic en Comenzar Aventura
         function iniciarCarga(event, destino) {
