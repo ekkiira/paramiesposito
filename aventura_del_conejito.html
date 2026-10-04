@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aventura Mágica del Conejito</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #1a1c29;
+            font-family: 'Fredoka', cursive, sans-serif;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        #hud {
+            position: absolute;
+            top: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            padding: 10px 24px;
+            border-radius: 50px;
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.2);
+            z-index: 10;
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            pointer-events: none;
+        }
+
+        .hud-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .hud-icon {
+            font-size: 24px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+
+        .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+            opacity: 1;
+            transition: opacity 0.4s ease, visibility 0.4s ease;
+            padding: 24px;
+            text-align: center;
+        }
+
+        .modal-overlay.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 32px;
+            padding: 36px 40px;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: popup 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popup {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .card-emoji {
+            font-size: 68px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .card h2 {
+            color: #ffffff;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .card p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 18px;
+            margin-bottom: 24px;
+            line-height: 1.4;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #ff758c 0%, #ff7eb3 100%);
+            color: white;
+            border: none;
+            padding: 16px 36px;
+            font-size: 20px;
+            font-family: 'Fredoka', cursive, sans-serif;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 8px 24px rgba(255, 117, 140, 0.5);
+            transition: all 0.25s ease;
+            outline: none;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px) scale(1.03);
+            box-shadow: 0 12px 30px rgba(255, 117, 140, 0.7);
+            background: linear-gradient(135deg, #ff6b81 0%, #ff758c 100%);
+        }
+
+        .btn:active {
+            transform: translateY(1px) scale(0.98);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            box-shadow: 0 8px 24px rgba(253, 160, 133, 0.5);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #f5cc51 0%, #fc9374 100%);
+            box-shadow: 0 12px 30px rgba(253, 160, 133, 0.7);
+        }
+
+        #tap-hint {
+            position: absolute;
+            bottom: 40px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            font-weight: 600;
+            pointer-events: none;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 0.9; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- Marcador HUD de alta estética -->
+        <div id="hud">
+            <div class="hud-item">
+                <span class="hud-icon">🥕</span>
+                <span id="score">0</span> / <span id="target">100</span>
+            </div>
+            <div class="hud-item" style="font-size: 16px; opacity: 0.8; margin-left: 10px;">
+                <span class="hud-icon">⭐</span>
+                <span id="streak">x1</span>
+            </div>
+        </div>
+
+        <div id="tap-hint">Presiona Espacio, Flecha Arriba o Toca la pantalla para Saltar</div>
+
+        <!-- Canvas del Juego -->
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Pantalla de Inicio -->
+        <div id="start-screen" class="modal-overlay">
+            <div class="card">
+                <div class="card-emoji">🐰✨</div>
+                <h2>Aventura del Conejito</h2>
+                <p>¡Ayuda al conejito a recolectar 100 zanahorias mágicas esquivando los obstáculos del bosque!</p>
+                <button class="btn btn-gold" onclick="iniciarJuego()">¡Empezar Aventura!</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Derrota -->
+        <div id="game-over-screen" class="modal-overlay hidden">
+            <div class="card">
+                <div class="card-emoji">🥺🌾</div>
+                <h2>¡Oh no, tropezaste!</h2>
+                <p>El conejito necesita un pequeño descanso. ¿Lo intentamos de nuevo juntos?</p>
+                <button class="btn" onclick="iniciarJuego()">Intentar de nuevo</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Victoria -->
+        <div id="victory-screen" class="modal-overlay hidden">
+            <div class="card">
+                <div class="card-emoji">👑🌟</div>
+                <h2>¡Lo lograste, mi amor!</h2>
+                <p>¡Llegaste a la meta de 100 zanahorias! Eres increíble. Te ganaste todo mi amor y un gran abrazo. ❤️</p>
+                <button class="btn btn-gold" onclick="iniciarJuego()">¡Jugar otra vez!</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+
+        // Configuración y variables principales
+        let W = window.innerWidth;
+        let H = window.innerHeight;
+
+        function resizeCanvas() {
+            W = window.innerWidth;
+            H = window.innerHeight;
+            canvas.width = W;
+            canvas.height = H;
+            if (conejo) {
+                conejo.groundY = H - 120;
+                if (conejo.isGrounded) conejo.y = conejo.groundY;
+            }
+        }
+
+        // Estado global del juego
+        let juegoActivo = false;
+        let score = 0;
+        const targetScore = 100;
+        let gameTime = 0; // Para el ciclo Día/Noche
+        let gameSpeed = 6.5;
+
+        const conejo = {
+            x: 100,
+            y: 0,
+            width: 50,
+            height: 50,
+            vy: 0,
+            gravity: 0.7,
+            jumpForce: -15,
+            groundY: 0,
+            isGrounded: true,
+            squishX: 1,
+            squishY: 1,
+            earAngle: 0,
+            runFrame: 0,
+
+            jump() {
+                if (this.isGrounded) {
+                    this.vy = this.jumpForce;
+                    this.isGrounded = false;
+                    this.squishX = 0.7;
+                    this.squishY = 1.35;
+                    crearParticulasPolvo(this.x + this.width / 2, this.groundY + this.height, 12);
+                }
+            },
+
+            update() {
+                this.vy += this.gravity;
+                this.y += this.vy;
+
+                // Suavizado de la deformación squish/bounce
+                this.squishX += (1 - this.squishX) * 0.15;
+                this.squishY += (1 - this.squishY) * 0.15;
+
+                // Animación de carrera y orejas
+                if (this.isGrounded) {
+                    this.runFrame += 0.2;
+                    this.earAngle = Math.sin(this.runFrame) * 0.15;
+                    // Polvo al correr
+                    if (Math.random() < 0.3) {
+                        crearParticulasPolvo(this.x + 10, this.groundY + this.height, 1);
+                    }
+                } else {
+                    this.earAngle = -0.3; // Orejas hacia atrás en salto
+                }
+
+                if (this.y >= this.groundY) {
+                    if (!this.isGrounded) {
+                        // Impacto de caída
+                        this.squishX = 1.3;
+                        this.squishY = 0.7;
+                        crearParticulasPolvo(this.x + this.width / 2, this.groundY + this.height, 8);
+                    }
+                    this.y = this.groundY;
+                    this.vy = 0;
+                    this.isGrounded = true;
+                }
+            },
+
+            draw() {
+                ctx.save();
+                ctx.translate(this.x + this.width / 2, this.y + this.height / 2);
+                ctx.scale(this.squishX, this.squishY);
+
+                const animY = this.isGrounded ? Math.sin(this.runFrame * 2) * 2 : 0;
+
+                // Sombra suave en el suelo
+                ctx.save();
+                ctx.scale(1 / this.squishX, 1 / this.squishY);
+                let shadowDist = (this.groundY - this.y) / 200;
+                let shadowAlpha = Math.max(0.1, 0.4 - shadowDist);
+                ctx.fillStyle = `rgba(0,0,0,${shadowAlpha})`;
+                ctx.beginPath();
+                ctx.ellipse(0, (this.groundY - this.y) + 20, 22 * (1 - shadowDist * 0.5), 6, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Translate extra para rebote de carrera
+                ctx.translate(0, animY);
+
+                // Oreja Trasera
+                ctx.fillStyle = "#e8e8e8";
+                ctx.save();
+                ctx.translate(-6, -15);
+                ctx.rotate(-0.2 + this.earAngle);
+                ctx.beginPath();
+                ctx.ellipse(0, -12, 6, 16, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "#ffb2c9";
+                ctx.beginPath();
+                ctx.ellipse(0, -12, 3, 11, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Oreja Delantera
+                ctx.fillStyle = "#ffffff";
+                ctx.save();
+                ctx.translate(6, -15);
+                ctx.rotate(0.1 + this.earAngle);
+                ctx.beginPath();
+                ctx.ellipse(0, -14, 7, 18, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "#ff8fa3";
+                ctx.beginPath();
+                ctx.ellipse(0, -14, 4, 13, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+
+                // Cola de algodón
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(-22, 8, 8, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Cuerpo
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.ellipse(-4, 6, 18, 15, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Cabeza
+                ctx.beginPath();
+                ctx.arc(8, -6, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Cachete rosado
+                ctx.fillStyle = "rgba(255, 143, 163, 0.5)";
+                ctx.beginPath();
+                ctx.arc(12, -2, 5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Ojo adorable
+                ctx.fillStyle = "#2c3e50";
+                ctx.beginPath();
+                ctx.arc(14, -8, 3.5, 0, Math.PI * 2);
+                ctx.fill();
+                // Brillo del ojo
+                ctx.fillStyle = "#ffffff";
+                ctx.beginPath();
+                ctx.arc(15.5, -9.5, 1.2, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Nariz
+                ctx.fillStyle = "#ff8fa3";
+                ctx.beginPath();
+                ctx.arc(22, -5, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Patitas delanteras / traseras
+                ctx.fillStyle = "#f0f0f0";
+                let legAnim = Math.sin(this.runFrame) * 8;
+                ctx.beginPath();
+                ctx.ellipse(10 + legAnim, 18, 6, 4, 0, 0, Math.PI * 2);
+                ctx.ellipse(-10 - legAnim, 18, 8, 5, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                ctx.restore();
+            }
+        };
+
+        let particulas = [];
+        let estrellas = [];
+
+        function initEstrellas() {
+            estrellas = [];
+            for (let i = 0; i < 60; i++) {
+                estrellas.push({
+                    x: Math.random() * W,
+                    y: Math.random() * (H * 0.5),
+                    size: Math.random() * 2 + 1,
+                    alpha: Math.random(),
+                    speed: Math.random() * 0.02 + 0.01
+                });
+            }
+        }
+
+        function crearParticulasPolvo(x, y, count = 5) {
+            for (let i = 0; i < count; i++) {
+                particulas.push({
+                    x: x + (Math.random() - 0.5) * 20,
+                    y: y + (Math.random() - 0.5) * 10,
+                    vx: (Math.random() - 0.5) * 3 - 2,
+                    vy: -Math.random() * 2 - 0.5,
+                    size: Math.random() * 4 + 2,
+                    alpha: 0.8,
+                    color: "#e2d8b4"
+                });
+            }
+        }
+
+        function crearBrillo(x, y) {
+            for (let i = 0; i < 10; i++) {
+                particulas.push({
+                    x: x,
+                    y: y,
+                    vx: (Math.random() - 0.5) * 6,
+                    vy: (Math.random() - 0.5) * 6,
+                    size: Math.random() * 5 + 2,
+                    alpha: 1,
+                    color: "#ffd700"
+                });
+            }
+        }
+
+        function updateParticulas() {
+            // Partículas ambientales de luz/polen
+            if (Math.random() < 0.1) {
+                particulas.push({
+                    x: Math.random() * W,
+                    y: Math.random() * H * 0.7,
+                    vx: Math.random() * 0.5 - 0.25,
+                    vy: -Math.random() * 0.5 - 0.1,
+                    size: Math.random() * 3 + 1,
+                    alpha: Math.random() * 0.6 + 0.2,
+                    color: "#ffffff"
+                });
+            }
+
+            for (let i = particulas.length - 1; i >= 0; i--) {
+                let p = particulas[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.alpha -= 0.015;
+
+                if (p.alpha <= 0) {
+                    particulas.splice(i, 1);
+                }
+            }
+        }
+
+        function drawParticulas() {
+            for (let p of particulas) {
+                ctx.save();
+                ctx.globalAlpha = p.alpha;
+                ctx.fillStyle = p.color;
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        let obstaculos = [];
+        let zanahorias = [];
+        let spawnTimer = 0;
+
+        function crearObstaculo() {
+            const tipos = ['hongo', 'roca', 'pajaro', 'flores'];
+            const tipo = tipos[Math.floor(Math.random() * tipos.length)];
+
+            let obs = {
+                x: W + 100,
+                y: 0,
+                width: 50,
+                height: 50,
+                tipo: tipo
+            };
+
+            if (tipo === 'hongo') {
+                obs.width = 45;
+                obs.height = 55;
+                obs.y = conejo.groundY + conejo.height - obs.height;
+            } else if (tipo === 'roca') {
+                obs.width = 55;
+                obs.height = 40;
+                obs.y = conejo.groundY + conejo.height - obs.height;
+            } else if (tipo === 'flores') {
+                obs.width = 40;
+                obs.height = 45;
+                obs.y = conejo.groundY + conejo.height - obs.height;
+            } else if (tipo === 'pajaro') {
+                obs.width = 45;
+                obs.height = 35;
+                obs.y = conejo.groundY - 60 - Math.random() * 60;
+                obs.animFrame = 0;
+            }
+
+            obstaculos.push(obs);
+
+            // Generar zanahoria flotante cerca o arriba
+            if (Math.random() < 0.75) {
+                zanahorias.push({
+                    x: obs.x + (Math.random() * 100 - 50),
+                    y: obs.tipo === 'pajaro' ? obs.y + 70 : conejo.groundY - 70 - Math.random() * 50,
+                    width: 30,
+                    height: 30,
+                    bobFrame: Math.random() * 10
+                });
+            }
+        }
+
+        function drawZanahoria(z) {
+            z.bobFrame += 0.08;
+            let bobY = Math.sin(z.bobFrame) * 6;
+
+            ctx.save();
+            ctx.translate(z.x + z.width / 2, z.y + z.height / 2 + bobY);
+
+            // Resplandor dorado alrededor de la zanahoria
+            ctx.shadowColor = "#ffa500";
+            ctx.shadowBlur = 12;
+
+            // Hojas
+            ctx.fillStyle = "#2ecc71";
+            ctx.beginPath();
+            ctx.ellipse(-2, -12, 4, 8, -0.3, 0, Math.PI * 2);
+            ctx.ellipse(2, -12, 4, 8, 0.3, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Cuerpo
+            ctx.fillStyle = "#ff7f50";
+            ctx.beginPath();
+            ctx.moveTo(-10, -8);
+            ctx.lineTo(10, -8);
+            ctx.lineTo(0, 14);
+            ctx.closePath();
+            ctx.fill();
+
+            // Detalle
+            ctx.strokeStyle = "#e67e22";
+            ctx.lineWidth = 1.5;
+            ctx.beginPath();
+            ctx.moveTo(-5, -2);
+            ctx.lineTo(2, -2);
+            ctx.moveTo(-2, 4);
+            ctx.lineTo(4, 4);
+            ctx.stroke();
+
+            ctx.restore();
+        }
+
+        function drawObstaculo(o) {
+            ctx.save();
+            ctx.translate(o.x + o.width / 2, o.y + o.height / 2);
+
+            if (o.tipo === 'hongo') {
+                // Tallo
+                ctx.fillStyle = "#f7f1e3";
+                ctx.fillRect(-8, 0, 16, 25);
+
+                // Sombrero con brillo suave
+                ctx.shadowColor = "#ff5252";
+                ctx.shadowBlur = 10;
+                ctx.fillStyle = "#ff5252";
+                ctx.beginPath();
+                ctx.arc(0, 2, 22, Math.PI, 0, false);
+                ctx.fill();
+
+                // Lunares
+                ctx.fillStyle = "#ffffff";
+                ctx.shadowBlur = 0;
+                ctx.beginPath();
+                ctx.arc(-10, -8, 4, 0, Math.PI * 2);
+                ctx.arc(8, -10, 3, 0, Math.PI * 2);
+                ctx.arc(0, -16, 4.5, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (o.tipo === 'roca') {
+                ctx.fillStyle = "#84817a";
+                ctx.beginPath();
+                ctx.moveTo(-25, 20);
+                ctx.lineTo(-18, -10);
+                ctx.lineTo(5, -20);
+                ctx.lineTo(25, -5);
+                ctx.lineTo(22, 20);
+                ctx.closePath();
+                ctx.fill();
+
+                // Musgo verde en la roca
+                ctx.fillStyle = "#2ed573";
+                ctx.beginPath();
+                ctx.ellipse(-5, -16, 10, 5, 0.2, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (o.tipo === 'flores') {
+                // Arbusto / Flores
+                ctx.fillStyle = "#2ed573";
+                ctx.beginPath();
+                ctx.arc(-10, 10, 14, 0, Math.PI * 2);
+                ctx.arc(10, 10, 14, 0, Math.PI * 2);
+                ctx.arc(0, -2, 16, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Petalos de flor
+                ctx.fillStyle = "#ff7979";
+                ctx.beginPath();
+                ctx.arc(0, -4, 6, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = "#feca57";
+                ctx.beginPath();
+                ctx.arc(0, -4, 2.5, 0, Math.PI * 2);
+                ctx.fill();
+            } 
+            else if (o.tipo === 'pajaro') {
+                o.animFrame += 0.2;
+                let wingY = Math.sin(o.animFrame) * 12;
+
+                ctx.fillStyle = "#9c88ff";
+                // Cuerpo
+                ctx.beginPath();
+                ctx.ellipse(0, 0, 14, 9, 0, 0, Math.PI * 2);
+                ctx.fill();
+
+                // Ala
+                ctx.fillStyle = "#8c7ae6";
+                ctx.beginPath();
+                ctx.moveTo(-2, 0);
+                ctx.quadraticCurveTo(-10, -15 + wingY, -20, -5 + wingY);
+                ctx.quadraticCurveTo(-8, 5, -2, 0);
+                ctx.fill();
+
+                // Pico
+                ctx.fillStyle = "#e1b12c";
+                ctx.beginPath();
+                ctx.moveTo(-12, -2);
+                ctx.lineTo(-20, 1);
+                ctx.lineTo(-12, 4);
+                ctx.fill();
+            }
+
+            ctx.restore();
+        }
+
+        function drawParallaxBackground() {
+            gameTime += 0.002;
+            let cycle = (Math.sin(gameTime) + 1) / 2; // Transición 0 (Día) a 1 (Noche)
+
+            // Gradiente de cielo dinámico
+            let skyGrad = ctx.createLinearGradient(0, 0, 0, H);
+            if (cycle < 0.5) {
+                // Día cálido a atardecer pastel
+                skyGrad.addColorStop(0, "#ffafbd");
+                skyGrad.addColorStop(0.6, "#ffc3a0");
+                skyGrad.addColorStop(1, "#fbf5e8");
+            } else {
+                // Atardecer a noche estrellada
+                skyGrad.addColorStop(0, "#0f2027");
+                skyGrad.addColorStop(0.5, "#203a43");
+                skyGrad.addColorStop(1, "#2c5364");
+            }
+            ctx.fillStyle = skyGrad;
+            ctx.fillRect(0, 0, W, H);
+
+            // Estrellas y Luna (visibles de noche)
+            if (cycle > 0.3) {
+                ctx.save();
+                ctx.globalAlpha = (cycle - 0.3) * 1.4;
+
+                // Estrellas
+                for (let s of estrellas) {
+                    s.alpha += s.speed;
+                    let a = (Math.sin(s.alpha) + 1) / 2;
+                    ctx.fillStyle = `rgba(255, 255, 255, ${a})`;
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                // Luna Mágica
+                ctx.shadowColor = "#fff";
+                ctx.shadowBlur = 20;
+                ctx.fillStyle = "#f5f6fa";
+                ctx.beginPath();
+                ctx.arc(W - 120, 100, 35, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                ctx.restore();
+            }
+
+            // Sol pastel (visible de día)
+            if (cycle < 0.7) {
+                ctx.save();
+                ctx.globalAlpha = (0.7 - cycle) * 1.4;
+                ctx.shadowColor = "#ffeaa7";
+                ctx.shadowBlur = 30;
+                ctx.fillStyle = "#fff5cc";
+                ctx.beginPath();
+                ctx.arc(140, 120, 45, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+
+            // Capa 1: Montañas lejanas (Parallax lento)
+            let mountainOffset = (gameTime * 100) % W;
+            ctx.fillStyle = cycle > 0.5 ? "rgba(40, 55, 75, 0.6)" : "rgba(235, 175, 185, 0.5)";
+            ctx.beginPath();
+            ctx.moveTo(0 - mountainOffset, H - 100);
+            for (let x = 0; x <= W + 300; x += 300) {
+                ctx.lineTo(x - mountainOffset + 150, H - 280);
+                ctx.lineTo(x - mountainOffset + 300, H - 100);
+            }
+            ctx.lineTo(W, H);
+            ctx.lineTo(0, H);
+            ctx.fill();
+
+            // Capa 2: Colinas suaves (Parallax medio)
+            let hillOffset = (gameTime * 250) % W;
+            ctx.fillStyle = cycle > 0.5 ? "rgba(30, 80, 70, 0.8)" : "#a8e6cf";
+            ctx.beginPath();
+            ctx.moveTo(0 - hillOffset, H - 80);
+            for (let x = 0; x <= W + 400; x += 200) {
+                ctx.quadraticCurveTo(x - hillOffset + 100, H - 200, x - hillOffset + 200, H - 80);
+            }
+            ctx.lineTo(W, H);
+            ctx.lineTo(0, H);
+            ctx.fill();
+
+            // Capa 3: Suelo principal verde con textura
+            ctx.fillStyle = cycle > 0.5 ? "#1b4d3e" : "#55efc4";
+            ctx.fillRect(0, conejo.groundY + conejo.height, W, H - (conejo.groundY + conejo.height));
+
+            // Borde superior del suelo con pasto tierno
+            ctx.fillStyle = cycle > 0.5 ? "#26735d" : "#00b894";
+            ctx.fillRect(0, conejo.groundY + conejo.height, W, 12);
+        }
+
+        function update() {
+            if (!juegoActivo) return;
+
+            conejo.update();
+            updateParticulas();
+
+            // Dificultad adaptativa suave
+            gameSpeed = 6.5 + (score / 100) * 3;
+
+            // Generar Obstáculos
+            spawnTimer++;
+            if (spawnTimer > 110 - (score * 0.3)) {
+                if (Math.random() < 0.7) {
+                    crearObstaculo();
+                    spawnTimer = 0;
+                }
+            }
+
+            // Actualizar Obstáculos
+            for (let i = obstaculos.length - 1; i >= 0; i--) {
+                let o = obstaculos[i];
+                o.x -= gameSpeed;
+
+                // Colisión AABB con margen suave
+                if (
+                    conejo.x + 10 < o.x + o.width - 10 &&
+                    conejo.x + conejo.width - 10 > o.x + 10 &&
+                    conejo.y + 10 < o.y + o.height - 5 &&
+                    conejo.y + conejo.height > o.y + 10
+                ) {
+                    gameOver();
+                }
+
+                if (o.x + o.width < -50) {
+                    obstaculos.splice(i, 1);
+                }
+            }
+
+            // Actualizar Zanahorias
+            for (let i = zanahorias.length - 1; i >= 0; i--) {
+                let z = zanahorias[i];
+                z.x -= gameSpeed;
+
+                // Colisión recolectar
+                if (
+                    conejo.x < z.x + z.width &&
+                    conejo.x + conejo.width > z.x &&
+                    conejo.y < z.y + z.height &&
+                    conejo.y + conejo.height > z.y
+                ) {
+                    score += 1;
+                    document.getElementById("score").innerText = score;
+                    crearBrillo(z.x + z.width / 2, z.y + z.height / 2);
+                    zanahorias.splice(i, 1);
+
+                    if (score >= targetScore) {
+                        victoria();
+                    }
+                } else if (z.x + z.width < -50) {
+                    zanahorias.splice(i, 1);
+                }
+            }
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, W, H);
+
+            drawParallaxBackground();
+
+            // Dibujar Zanahorias
+            for (let z of zanahorias) {
+                drawZanahoria(z);
+            }
+
+            // Dibujar Obstáculos
+            for (let o of obstaculos) {
+                drawObstaculo(o);
+            }
+
+            // Dibujar Conejito
+            conejo.draw();
+
+            // Dibujar Partículas
+            drawParticulas();
+        }
+
+        function gameLoop() {
+            update();
+            render();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function iniciarJuego() {
+            resizeCanvas();
+            score = 0;
+            spawnTimer = 0;
+            obstaculos = [];
+            zanahorias = [];
+            particulas = [];
+            initEstrellas();
+
+            document.getElementById("score").innerText = "0";
+            document.getElementById("start-screen").classList.add("hidden");
+            document.getElementById("game-over-screen").classList.add("hidden");
+            document.getElementById("victory-screen").classList.add("hidden");
+
+            conejo.y = conejo.groundY;
+            conejo.vy = 0;
+            conejo.isGrounded = true;
+
+            juegoActivo = true;
+        }
+
+        function gameOver() {
+            juegoActivo = false;
+            document.getElementById("game-over-screen").classList.remove("hidden");
+        }
+
+        function victoria() {
+            juegoActivo = false;
+            document.getElementById("victory-screen").classList.remove("hidden");
+        }
+
+        // Controles de entrada
+        function handleJump(e) {
+            if (e.type === 'keydown' && (e.code === 'Space' || e.code === 'ArrowUp')) {
+                e.preventDefault();
+                if (juegoActivo) conejo.jump();
+            } else if (e.type === 'touchstart' || e.type === 'mousedown') {
+                if (e.target.tagName !== 'BUTTON' && e.target.tagName !== 'A') {
+                    if (juegoActivo) conejo.jump();
+                }
+            }
+        }
+
+        window.addEventListener('keydown', handleJump);
+        window.addEventListener('touchstart', handleJump, { passive: true });
+        window.addEventListener('mousedown', handleJump);
+        window.addEventListener('resize', resizeCanvas);
+
+        // Iniciar renderizado constante
+        resizeCanvas();
+        initEstrellas();
+        gameLoop();
+    </script>
+</body>
+</html>
