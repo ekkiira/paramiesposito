@@ -96,11 +96,11 @@
             z-index: 10;
         }
         .overlay img {
-            width: 160px;
-            height: 160px;
+            width: 150px;
+            height: 150px;
             object-fit: cover;
             border-radius: 20px;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             box-shadow: 0 5px 20px rgba(0,0,0,0.7);
             border: 3px solid #ffb6c1;
         }
@@ -132,6 +132,16 @@
         .btn-secundario:hover {
             background-color: #4682b4;
         }
+        .instrucciones-caja {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed #ffb6c1;
+            padding: 15px 25px;
+            border-radius: 15px;
+            max-width: 500px;
+            margin-bottom: 15px;
+            font-size: 18px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -150,6 +160,15 @@
         <!-- Audio de fondo -->
         <audio id="musicaFondo" src="musica.mp3" preload="auto" loop></audio>
 
+        <!-- Pantalla de Instrucciones por Nivel -->
+        <div id="pantalla-instrucciones" class="overlay">
+            <h2 id="instrucciones-titulo" style="color: #ffb6c1; font-size: 32px; margin-bottom: 10px;">Nivel 1</h2>
+            <div class="instrucciones-caja" id="instrucciones-texto">
+                Cargando instrucciones...
+            </div>
+            <button class="btn" onclick="cerrarInstruccionesYComenzar()">¡A jugar! 🚀</button>
+        </div>
+
         <!-- Pantalla de Pausa -->
         <div id="pantalla-pausa" class="overlay hidden">
             <h2>Juego Pausado ⏸</h2>
@@ -163,7 +182,7 @@
         <div id="pantalla-derrota" class="overlay hidden">
             <img src="pantalladeperdiste.jpg" alt="Perdiste">
             <h2>¡Casi, mi amor! El conejito tropezó 🥺</h2>
-            <p style="font-size: 18px; margin-bottom: 10px;">¡No te por vencido, mi vida!</p>
+            <p style="font-size: 18px; margin-bottom: 10px;">¡No te des por vencido, mi vida!</p>
             <div>
                 <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
                 <a href="index.html" class="btn btn-secundario" style="margin-left: 10px;">Volver al Menú 🏠</a>
@@ -195,6 +214,7 @@
         let puntos = 0;
         let juegoActivo = false;
         let estaPausado = false;
+        let esperandoInicio = true;
         let contadorFrames = 0;
 
         let conejo = {
@@ -203,15 +223,15 @@
             width: 85, 
             height: 85, 
             vy: 0, 
-            gravedad: 0.6, 
-            fuerzaSalto: -11.5, 
+            gravedad: 0.55, 
+            fuerzaSalto: -11.0, 
             suelo: 340, 
             enSuelo: false
         };
 
-        let elementos = []; // Corazones o coleccionables
-        let obstaculos = []; // Tubos, rocas, espinas o plataformas
-        let plataformasMoviles = []; // Para nivel 3 y 5
+        let elementos = []; 
+        let obstaculos = []; 
+        let plataformasMoviles = []; 
 
         const mensajesAmor = [
             "¡Mi conejito! 🐰💖",
@@ -220,6 +240,29 @@
             "¡Qué tierno lo haces! 🌸",
             "¡Te amo con todo mi corazón! 💌"
         ];
+
+        const datosNiveles = {
+            1: {
+                titulo: "Nivel 1: Vuelo de Amor (Modo Flappy)",
+                texto: "¡El conejito va flotando en el cielo celeste!<br>Presiona <b>Espacio</b>, <b>Flecha Arriba</b> o haz <b>clic</b> repetidas veces para mantenerlo en el aire y esquivar los obstáculos de arriba y abajo.<br>¡Recolecta 100 puntos para ganar!"
+            },
+            2: {
+                titulo: "Nivel 2: Carrera Nocturna de Obstáculos",
+                texto: "¡Bajo la luz de la luna! 🌙<br>El conejito corre por el suelo. Presiona <b>Espacio</b> o haz <b>clic</b> para saltar las rocas y obstáculos terrestres mientras atrapas los corazones flotantes.<br>¡Llega a 100 puntos!"
+            },
+            3: {
+                titulo: "Nivel 3: Escalada en las Alturas",
+                texto: "¡Cuidado abajo! El suelo tiene espinas peligrosas.<br>Usa los saltos para subir y moverte sobre las <b>plataformas flotantes</b> de madera. Atrapa los corazones y evita tocar el suelo rojo.<br>¡Apunta a 100 puntos!"
+            },
+            4: {
+                titulo: "Nivel 4: Lluvia Estelar Rápida",
+                texto: "¡Lluvia de corazones veloces! 💙💖<br>Los elementos caen y se mueven más rápido en este cielo nocturno dinámico. Calcula muy bien tus saltos y reflejos para atraparlos todos.<br>¡Consigue 100 puntos!"
+            },
+            5: {
+                titulo: "Nivel 5: El Reto Final de Amor",
+                texto: "¡La prueba definitiva! 👑<br>Combina plataformas flotantes dinámicas, obstáculos sorpresa y reflejos precisos. ¡Demuestra tu habilidad y completa la gran aventura de nuestro amor!"
+            }
+        };
 
         function cambiarMensajeRomantico() {
             const el = document.getElementById("mensaje-romantico");
@@ -233,7 +276,7 @@
                 e.preventDefault(); 
                 saltar(); 
             } else if (e.code === "KeyP" || e.code === "Escape") {
-                alternarPausa();
+                if (!esperandoInicio) alternarPausa();
             }
         });
 
@@ -243,19 +286,43 @@
         });
 
         function saltar() {
-            if (!juegoActivo || estaPausado) return;
-            // Doble salto o salto normal según el nivel
-            if (conejo.enSuelo || nivel === 3 || nivel === 5) {
+            if (!juegoActivo || estaPausado || esperandoInicio) return;
+            
+            // En Nivel 1 y 4 permitimos impulso libre estilo aire, en 2, 3, 5 salto desde suelo/plataformas
+            if (nivel === 1 || nivel === 4 || conejo.enSuelo) {
                 conejo.vy = conejo.fuerzaSalto;
                 conejo.enSuelo = false;
             }
         }
 
         function intentarReproducirMusica() {
-            if (musica.paused && juegoActivo && !estaPausado) {
+            if (musica.paused && juegoActivo && !estaPausado && !esperandoInicio) {
                 musica.volume = 0.4;
                 musica.play().catch(e => {});
             }
+        }
+
+        function mostrarInstrucciones() {
+            esperandoInicio = true;
+            juegoActivo = false;
+            musica.pause();
+            
+            document.getElementById("instrucciones-titulo").innerText = datosNiveles[nivel].titulo;
+            document.getElementById("instrucciones-texto").innerHTML = datosNiveles[nivel].texto;
+            document.getElementById("pantalla-instrucciones").classList.remove("hidden");
+        }
+
+        function cerrarInstruccionesYComenzar() {
+            document.getElementById("pantalla-instrucciones").classList.add("hidden");
+            esperandoInicio = false;
+            juegoActivo = true;
+            
+            musica.volume = 0.4;
+            musica.play().catch(e => {});
+            
+            // Dibujar un frame estático de fondo para que no se vea negro
+            dibujar();
+            loop();
         }
 
         function alternarPausa() {
@@ -284,7 +351,7 @@
         function cargarNivel() {
             puntos = 0;
             actualizarHUD();
-            conejo.y = 300;
+            conejo.y = (nivel === 1 || nivel === 4) ? 250 : 300;
             conejo.vy = 0;
             conejo.enSuelo = true;
             elementos = [];
@@ -292,18 +359,13 @@
             plataformasMoviles = [];
             contadorFrames = 0;
 
-            juegoActivo = true;
-            estaPausado = false;
             document.getElementById("pantalla-pausa").classList.add("hidden");
             document.getElementById("pantalla-derrota").classList.add("hidden");
             document.getElementById("pantalla-victoria").classList.add("hidden");
             document.getElementById("btn-pausa").innerText = "⏸ Pausa";
 
-            musica.volume = 0.4;
-            musica.play().catch(e => {});
-            
             cambiarMensajeRomantico();
-            loop();
+            mostrarInstrucciones();
         }
 
         function reiniciarNivel() {
@@ -325,12 +387,12 @@
         }
 
         function actualizar() {
-            if (!juegoActivo || estaPausado) return;
+            if (!juegoActivo || estaPausado || esperandoInicio) return;
 
             contadorFrames++;
-            let velocidadMundo = 5.5 + (nivel * 0.5);
+            let velocidadMundo = 5.0 + (nivel * 0.4);
 
-            // Gravedad y física del conejo
+            // Gravedad del conejo
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
@@ -343,21 +405,20 @@
                 conejo.enSuelo = false;
             }
 
-            // --- LÓGICA SEGÚN EL NIVEL ---
+            // --- MECÁNICAS ESPECÍFICAS POR NIVEL ---
             if (nivel === 1) {
-                // NIVEL 1: Tipo Flappy Bird con tubos/obstáculos superiores e inferiores
-                if (contadorFrames % 100 === 0) {
-                    let alturaH = Math.floor(Math.random() * 150) + 70;
-                    obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
-                    obstaculos.push({ x: canvas.width, y: alturaH + 130, width: 50, height: canvas.height - (alturaH + 130), tipo: 'tubo_abajo' });
+                // NIVEL 1: Estilo Flappy Bird con tubos
+                if (contadorFrames % 110 === 0) {
+                    let alturaH = Math.floor(Math.random() * 140) + 60;
+                    obstaculos.push({ x: canvas.width, y: 0, width: 55, height: alturaH, tipo: 'tubo_arriba' });
+                    obstaculos.push({ x: canvas.width, y: alturaH + 140, width: 55, height: canvas.height - (alturaH + 140), tipo: 'tubo_abajo' });
                     
-                    // Corazón en el espacio del tubo
-                    elementos.push({ x: canvas.width + 15, y: alturaH + 65, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
+                    elementos.push({ x: canvas.width + 25, y: alturaH + 70, radius: 18, tipo: Math.random() > 0.5 ? 'rosa' : 'azul' });
                 }
             } 
             else if (nivel === 2) {
-                // NIVEL 2: Obstáculos terrestres nítidos y corazones flotantes
-                if (contadorFrames % 90 === 0) {
+                // NIVEL 2: Obstáculos terrestres
+                if (contadorFrames % 95 === 0) {
                     obstaculos.push({ x: canvas.width, y: 345, width: 40, height: 45, tipo: 'roca' });
                 }
                 if (contadorFrames % 70 === 0) {
@@ -365,47 +426,43 @@
                 }
             } 
             else if (nivel === 3) {
-                // NIVEL 3: Subir plataformas evitando espinas en el suelo
-                if (contadorFrames % 120 === 0) {
-                    let pY = Math.floor(Math.random() * 120) + 200;
+                // NIVEL 3: Plataformas y suelo mortal
+                if (contadorFrames % 130 === 0) {
+                    let pY = Math.floor(Math.random() * 120) + 190;
                     plataformasMoviles.push({ x: canvas.width, y: pY, width: 130, height: 20 });
-                    elementos.push({ x: canvas.width + 45, y: pY - 30, radius: 18, tipo: 'rosa' });
+                    elementos.push({ x: canvas.width + 45, y: pY - 35, radius: 18, tipo: 'rosa' });
                 }
-                // Espinas continuas abajo
-                if (contadorFrames % 150 === 0) {
+                if (contadorFrames % 160 === 0) {
                     obstaculos.push({ x: canvas.width, y: 375, width: 60, height: 15, tipo: 'espinas' });
                 }
             } 
             else if (nivel === 4) {
-                // NIVEL 4 (Criterio): Lluvia de corazones veloces y obstáculos móviles rápidos
-                if (contadorFrames % 60 === 0) {
-                    elementos.push({ x: canvas.width, y: Math.floor(Math.random() * 250) + 100, radius: 18, tipo: 'azul' });
-                }
-                if (contadorFrames % 80 === 0) {
-                    obstaculos.push({ x: canvas.width, y: Math.random() > 0.5 ? 330 : 220, width: 45, height: 45, tipo: 'roca_flotante' });
+                // NIVEL 4: Lluvia flotante rápida (Tipo Flappy veloz)
+                if (contadorFrames % 75 === 0) {
+                    let alturaH = Math.floor(Math.random() * 120) + 80;
+                    obstaculos.push({ x: canvas.width, y: 0, width: 50, height: alturaH, tipo: 'tubo_arriba' });
+                    obstaculos.push({ x: canvas.width, y: alturaH + 150, width: 50, height: canvas.height - (alturaH + 150), tipo: 'tubo_abajo' });
+                    elementos.push({ x: canvas.width + 25, y: alturaH + 75, radius: 18, tipo: 'azul' });
                 }
             } 
             else if (nivel === 5) {
-                // NIVEL 5 (Criterio): Reto final con plataformas dinámicas, corazones dobles y estelas de obstáculos
-                if (contadorFrames % 90 === 0) {
-                    let pY = Math.floor(Math.random() * 140) + 180;
+                // NIVEL 5: Reto completo con plataformas y obstáculos
+                if (contadorFrames % 100 === 0) {
+                    let pY = Math.floor(Math.random() * 130) + 180;
                     plataformasMoviles.push({ x: canvas.width, y: pY, width: 110, height: 18 });
-                    elementos.push({ x: canvas.width + 35, y: pY - 30, radius: 18, tipo: 'rosa' });
+                    elementos.push({ x: canvas.width + 35, y: pY - 35, radius: 18, tipo: 'rosa' });
                     obstaculos.push({ x: canvas.width + 120, y: pY - 40, width: 30, height: 30, tipo: 'espinas' });
                 }
             }
 
             // Colisiones con plataformas móviles (Niveles 3 y 5)
-            conejo.enSuelo = (nivel === 3 || nivel === 5) ? false : (conejo.y >= conejo.suelo);
             if (nivel === 3 || nivel === 5) {
                 if (conejo.y >= conejo.suelo) {
-                    // Tocar el suelo base en nivel 3 y 5 es muerte instantánea por espinas
                     derrotaJuego();
                     return;
                 }
                 for (let plat of plataformasMoviles) {
                     plat.x -= velocidadMundo;
-                    // Checar si el conejo cae sobre la plataforma
                     if (
                         conejo.x + conejo.width - 20 > plat.x &&
                         conejo.x + 20 < plat.x + plat.width &&
@@ -420,7 +477,7 @@
                 }
             }
 
-            // Actualizar elementos (Corazones azules y rosas)
+            // Actualizar elementos (Corazones)
             for (let i = elementos.length - 1; i >= 0; i--) {
                 elementos[i].x -= velocidadMundo;
                 let dx = (conejo.x + conejo.width/2) - elementos[i].x;
@@ -446,7 +503,6 @@
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
-                // Colisión precisa
                 if (
                     conejo.x + 18 < obstaculos[i].x + obstaculos[i].width &&
                     conejo.x + conejo.width - 18 > obstaculos[i].x &&
@@ -485,51 +541,30 @@
         function dibujar() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // --- FONDO CAMBIANTE DÍA / NOCHE / ATARDECER SEGÚN NIVEL ---
+            // Fondo según el nivel
             if (nivel === 1) {
-                // Día alegre
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#87CEEB");
-                grad.addColorStop(1, "#E0F6FF");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                // Sol
-                ctx.fillStyle = "#FFD700";
-                ctx.beginPath(); ctx.arc(750, 90, 45, 0, Math.PI*2); ctx.fill();
+                grad.addColorStop(0, "#87CEEB"); grad.addColorStop(1, "#E0F6FF");
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#FFD700"; ctx.beginPath(); ctx.arc(750, 90, 45, 0, Math.PI*2); ctx.fill();
             } else if (nivel === 2) {
-                // Noche romántica con estrellas
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#0b0b2b");
-                grad.addColorStop(1, "#1f1b4e");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                // Estrellas
-                ctx.fillStyle = "#FFF";
-                ctx.fillRect(150, 80, 4, 4); ctx.fillRect(400, 120, 5, 5); ctx.fillRect(750, 70, 4, 4);
-                // Luna
-                ctx.fillStyle = "#FFF8DC";
-                ctx.beginPath(); ctx.arc(800, 100, 35, 0, Math.PI*2); ctx.fill();
+                grad.addColorStop(0, "#0b0b2b"); grad.addColorStop(1, "#1f1b4e");
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = "#FFF"; ctx.fillRect(150, 80, 4, 4); ctx.fillRect(400, 120, 5, 5); ctx.fillRect(750, 70, 4, 4);
+                ctx.fillStyle = "#FFF8DC"; ctx.beginPath(); ctx.arc(800, 100, 35, 0, Math.PI*2); ctx.fill();
             } else if (nivel === 3) {
-                // Atardecer cálido
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#ff7e5f");
-                grad.addColorStop(1, "#feb47b");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, "#ff7e5f"); grad.addColorStop(1, "#feb47b");
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             } else if (nivel === 4) {
-                // Noche mágica azulada
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#2c3e50");
-                grad.addColorStop(1, "#3498db");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, "#2c3e50"); grad.addColorStop(1, "#3498db");
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             } else {
-                // Nivel 5: Aurora boreal romántica
                 let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-                grad.addColorStop(0, "#11998e");
-                grad.addColorStop(1, "#38ef7d");
-                ctx.fillStyle = grad;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                grad.addColorStop(0, "#11998e"); grad.addColorStop(1, "#38ef7d");
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
             // Suelo dibujado
@@ -538,7 +573,7 @@
             ctx.fillStyle = "#8d5524";
             ctx.fillRect(0, 380, canvas.width, 10);
 
-            // --- DIBUJAR PLATAFORMAS MÓVILES ---
+            // Plataformas móviles
             for (let plat of plataformasMoviles) {
                 ctx.fillStyle = "#d7ccc8";
                 ctx.strokeStyle = "#8d5524";
@@ -547,7 +582,7 @@
                 ctx.strokeRect(plat.x, plat.y, plat.width, plat.height);
             }
 
-            // --- DIBUJAR CORAZONES AZULES Y ROSAS ---
+            // Corazones
             for (let el of elementos) {
                 ctx.font = "32px sans-serif";
                 ctx.textAlign = "center";
@@ -556,7 +591,7 @@
                 ctx.fillText(simboloCorazon, el.x, el.y);
             }
 
-            // --- DIBUJAR OBSTÁCULOS NÍDIDOS ---
+            // Obstáculos
             for (let o of obstaculos) {
                 if (o.tipo === 'tubo_arriba' || o.tipo === 'tubo_abajo') {
                     ctx.fillStyle = "#ffb6c1";
@@ -575,7 +610,6 @@
                     }
                     ctx.fill();
                 } else {
-                    // Roca o tronco estilizado
                     ctx.fillStyle = "#6d4c41";
                     ctx.beginPath();
                     ctx.roundRect(o.x, o.y, o.width, o.height, [8]);
@@ -586,7 +620,7 @@
                 }
             }
 
-            // --- DIBUJAR CONEJO NÍDIDO ---
+            // Conejo
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
@@ -596,7 +630,7 @@
         }
 
         function loop() {
-            if (!juegoActivo || estaPausado) return;
+            if (!juegoActivo || estaPausado || esperandoInicio) return;
             actualizar();
             dibujar();
             requestAnimationFrame(loop);
