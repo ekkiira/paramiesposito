@@ -8,37 +8,37 @@
         body {
             margin: 0;
             padding: 0;
-            background-color: #111;
+            background-color: #0b0b0b;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            font-family: 'Arial', sans-serif;
+            width: 100vw;
             overflow: hidden;
         }
         #game-container {
             position: relative;
-            width: 800px;
-            height: 450px;
-            border-radius: 15px;
+            width: 100vw;
+            height: 100vh;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
         canvas {
             display: block;
             width: 100%;
             height: 100%;
-            /* Forzamos suavizado limpio para evitar bordes borrosos feos */
-            image-rendering: auto;
+            object-fit: cover; /* Esto hace que el fondo abarque absolutamente toda la pantalla sin barras negras */
         }
         #hud {
             position: absolute;
-            top: 15px;
-            left: 20px;
+            top: 25px;
+            left: 35px;
             color: white;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            text-shadow: 2px 2px 5px rgba(0,0,0,0.9);
+            text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
         }
         .overlay {
@@ -47,7 +47,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.78);
+            background: rgba(0,0,0,0.8);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -57,12 +57,12 @@
             z-index: 10;
         }
         .overlay img {
-            width: 160px;
-            height: 160px;
+            width: 180px;
+            height: 180px;
             object-fit: cover;
-            border-radius: 15px;
-            margin-bottom: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.7);
             border: 3px solid #ffb6c1;
         }
         .hidden {
@@ -72,13 +72,13 @@
             background-color: #ffb6c1;
             color: white;
             border: none;
-            padding: 12px 28px;
-            font-size: 18px;
-            border-radius: 30px;
+            padding: 14px 32px;
+            font-size: 20px;
+            border-radius: 35px;
             cursor: pointer;
             font-weight: bold;
             margin-top: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             text-decoration: none;
             transition: 0.2s;
         }
@@ -93,13 +93,13 @@
     <div id="game-container">
         <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
         
-        <canvas id="gameCanvas" width="800" height="450"></canvas>
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
 
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="overlay hidden">
             <img src="pantalladeperdiste.jpg" alt="Perdiste">
             <h2>¡Oh no, el conejito tropezó! 🥺</h2>
-            <p>¡Inténtalo de nuevo, mi amor!</p>
+            <p style="font-size: 20px;">¡Inténtalo de nuevo, mi amor!</p>
             <button class="btn" onclick="reiniciarNivel()">Reintentar Nivel</button>
         </div>
 
@@ -107,16 +107,14 @@
         <div id="pantalla-victoria" class="overlay hidden">
             <img src="Ganadorodenivel.png" alt="Ganador">
             <h2 id="titulo-victoria">¡Nivel Superado! 🎉</h2>
-            <p id="texto-victoria">¡Excelente trabajo mi amor!</p>
-            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡️</button>
+            <p id="texto-victoria" style="font-size: 20px;">¡Excelente trabajo mi amor!</p>
+            <button class="btn" onclick="siguienteNivel()">Siguiente Nivel ➡️️</button>
         </div>
     </div>
 
     <script>
         const canvas = document.getElementById("gameCanvas");
         const ctx = canvas.getContext("2d");
-        
-        // Activamos suavizado de alta calidad para que el escalado de la imagen se vea nítido
         ctx.imageSmoothingEnabled = true;
         ctx.imageSmoothingQuality = 'high';
 
@@ -125,21 +123,20 @@
         const fondoDia = new Image(); fondoDia.src = "fondodia.jpg";
         const fondoNoche = new Image(); fondoNoche.src = "fondonoche.jpg";
 
-        // Estado del juego
         let nivel = 1;
         let puntos = 0;
         let juegoActivo = false;
-        let tiempoCiclo = 0; // Cambia día/noche cada 20 segundos
+        let tiempoCiclo = 0;
 
         let conejo = {
-            x: 100, 
-            y: 260, 
-            width: 110,   // ¡Mucho más grande y visible en pantalla!
-            height: 110,  // ¡Mucho más grande y visible en pantalla!
+            x: 120, 
+            y: 480, 
+            width: 130,   
+            height: 130,  
             vy: 0, 
-            gravedad: 0.5, 
-            fuerzaSalto: -12, 
-            suelo: 260,  
+            gravedad: 0.45, 
+            fuerzaSalto: -13.5, 
+            suelo: 480,  
             enSuelo: false
         };
 
@@ -147,7 +144,6 @@
         let obstaculos = []; 
         let contadorFrames = 0;
 
-        // Controles de salto (Barra espaciadora o clic en pantalla)
         window.addEventListener("keydown", e => { 
             if (e.code === "Space") { 
                 e.preventDefault(); 
@@ -209,7 +205,6 @@
 
             tiempoCiclo += 1/60; 
 
-            // Movimiento físico del conejito
             conejo.vy += conejo.gravedad;
             conejo.y += conejo.vy;
 
@@ -221,19 +216,18 @@
                 conejo.enSuelo = false;
             }
 
-            // Velocidad del nivel (incrementa por nivel)
-            let velocidadMundo = 3.5 + (nivel * 0.5);
+            let velocidadMundo = 3 + (nivel * 0.4);
             contadorFrames++;
 
-            // Generar zanahorias (bolitas naranjas) en posiciones cómodas
-            if (contadorFrames % 110 === 0) {
-                let alturaZanahoria = Math.random() > 0.4 ? 290 : 180; 
-                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 16, valor: 20 });
+            // Generar zanahorias a intervalos cómodos y alcanzables
+            if (contadorFrames % 130 === 0) {
+                let alturaZanahoria = Math.random() > 0.4 ? 520 : 360; 
+                zanahorias.push({ x: canvas.width + 50, y: alturaZanahoria, radius: 22, valor: 20 });
             }
 
-            // Generar obstáculos que se pueden saltar fácilmente
-            if (contadorFrames % 150 === 0) {
-                obstaculos.push({ x: canvas.width + 50, y: 300, width: 38, height: 60 });
+            // Generar obstáculos muy fáciles de saltar y espaciados
+            if (contadorFrames % 180 === 0) {
+                obstaculos.push({ x: canvas.width + 50, y: 530, width: 45, height: 80 });
             }
 
             // Mover y verificar zanahorias
@@ -242,7 +236,7 @@
                 
                 let dx = (conejo.x + conejo.width/2) - zanahorias[i].x;
                 let dy = (conejo.y + conejo.height/2) - zanahorias[i].y;
-                if (Math.hypot(dx, dy) < 50) {
+                if (Math.hypot(dx, dy) < 65) {
                     puntos += zanahorias[i].valor;
                     zanahorias.splice(i, 1);
                     actualizarHUD();
@@ -250,7 +244,7 @@
                     if (puntos >= 100) {
                         juegoActivo = false;
                         if (nivel === 5) {
-                            document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️️";
+                            document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️";
                             document.getElementById("texto-victoria").innerText = "¡Eres la mejor jugadora, vamos a los créditos!";
                         } else {
                             document.getElementById("titulo-victoria").innerText = `¡Nivel ${nivel} Superado! 🎉`;
@@ -264,14 +258,14 @@
                 }
             }
 
-            // Mover y verificar obstáculos con hitbox generosa
+            // Mover y verificar obstáculos con hitbox muy noble
             for (let i = obstaculos.length - 1; i >= 0; i--) {
                 obstaculos[i].x -= velocidadMundo;
 
                 if (
-                    conejo.x + 25 < obstaculos[i].x + obstaculos[i].width &&
-                    conejo.x + conejo.width - 25 > obstaculos[i].x &&
-                    conejo.y + conejo.height > obstaculos[i].y + 12
+                    conejo.x + 30 < obstaculos[i].x + obstaculos[i].width &&
+                    conejo.x + conejo.width - 30 > obstaculos[i].x &&
+                    conejo.y + conejo.height > obstaculos[i].y + 20
                 ) {
                     juegoActivo = false;
                     document.getElementById("pantalla-derrota").classList.remove("hidden");
@@ -285,7 +279,6 @@
         }
 
         function dibujar() {
-            // Fondo día / noche cada 20 segundos
             let cicloActual = Math.floor(tiempoCiclo / 20) % 2; 
             let fondoActivo = (cicloActual === 0) ? fondoDia : fondoNoche;
 
@@ -296,31 +289,30 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            // Dibujar zanahorias (bolitas naranjas con hojita verde)
+            // Dibujar zanahorias
             for (let z of zanahorias) {
                 ctx.beginPath();
                 ctx.arc(z.x, z.y, z.radius, 0, Math.PI * 2);
                 ctx.fillStyle = "#ff7f00";
                 ctx.fill();
-                ctx.lineWidth = 2.5;
+                ctx.lineWidth = 3;
                 ctx.strokeStyle = "#fff";
                 ctx.stroke();
                 ctx.closePath();
 
-                // Hoja
                 ctx.fillStyle = "#228b22";
-                ctx.fillRect(z.x - 4, z.y - z.radius - 10, 8, 10);
+                ctx.fillRect(z.x - 5, z.y - z.radius - 12, 10, 12);
             }
 
-            // Dibujar obstáculos más claros y visibles
+            // Dibujar obstáculos
             for (let o of obstaculos) {
                 ctx.fillStyle = "#8b4513";
                 ctx.fillRect(o.x, o.y, o.width, o.height);
                 ctx.fillStyle = "#5c2c16";
-                ctx.fillRect(o.x + 5, o.y + 5, o.width - 10, 10);
+                ctx.fillRect(o.x + 6, o.y + 6, o.width - 12, 14);
             }
 
-            // Dibujar conejito a gran escala con suavizado de alta calidad
+            // Dibujar conejito
             if (imgConejo.complete) {
                 ctx.drawImage(imgConejo, conejo.x, conejo.y, conejo.width, conejo.height);
             } else {
