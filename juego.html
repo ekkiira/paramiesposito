@@ -41,6 +41,27 @@
             text-shadow: 2px 2px 6px rgba(0,0,0,0.9);
             z-index: 5;
         }
+        /* Estilo para el botón de pausa flotante */
+        #btn-pausa {
+            position: absolute;
+            top: 22px;
+            right: 35px;
+            background-color: rgba(255, 182, 193, 0.85);
+            color: white;
+            border: 2px solid white;
+            padding: 10px 20px;
+            font-size: 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            z-index: 6;
+            transition: 0.2s;
+        }
+        #btn-pausa:hover {
+            background-color: #ff69b4;
+            transform: scale(1.05);
+        }
         .overlay {
             position: absolute;
             top: 0;
@@ -93,7 +114,20 @@
     <div id="game-container">
         <div id="hud">Nivel: <span id="txt-nivel">1</span>/5 | Puntos: <span id="txt-puntos">0</span>/100</div>
         
+        <!-- Botón de Pausa -->
+        <button id="btn-pausa" onclick="alternarPausa()">⏸ Pausa</button>
+
         <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+        <!-- Elemento de Música de Fondo (Asegúrate de subir tu archivo musica.mp3) -->
+        <audio id="musicaFondo" src="musica.mp3" loop></audio>
+
+        <!-- Pantalla de Pausa -->
+        <div id="pantalla-pausa" class="overlay hidden">
+            <h2>Juego Pausado ⏸</h2>
+            <p style="font-size: 20px; margin-bottom: 20px;">Tómate un respiro, mi amor.</p>
+            <button class="btn" onclick="alternarPausa()">Reanudar ▶</button>
+        </div>
 
         <!-- Pantalla de Derrota -->
         <div id="pantalla-derrota" class="overlay hidden">
@@ -121,10 +155,12 @@
         const imgConejo = new Image(); imgConejo.src = "conejitocorriendo.png";
         const fondoDia = new Image(); fondoDia.src = "fondodia.jpg";
         const fondoNoche = new Image(); fondoNoche.src = "fondonoche.jpg";
+        const musica = document.getElementById("musicaFondo");
 
         let nivel = 1;
         let puntos = 0;
         let juegoActivo = false;
+        let estaPausado = false;
         let tiempoCiclo = 0;
 
         let conejo = {
@@ -133,8 +169,8 @@
             width: 100,   
             height: 100,  
             vy: 0, 
-            gravedad: 0.6,        // Ligeramente más ágil para respuesta rápida
-            fuerzaSalto: -12,     // Salto dinámico y cómodo
+            gravedad: 0.6,        
+            fuerzaSalto: -12,     
             suelo: 280,  
             enSuelo: false
         };
@@ -147,15 +183,36 @@
             if (e.code === "Space") { 
                 e.preventDefault(); 
                 saltar(); 
-            } 
+            } else if (e.code === "KeyP" || e.code === "Escape") {
+                alternarPausa();
+            }
         });
         canvas.addEventListener("click", () => saltar());
 
         function saltar() {
-            if (!juegoActivo) return;
+            if (!juegoActivo || estaPausado) return;
             if (conejo.enSuelo) {
                 conejo.vy = conejo.fuerzaSalto;
                 conejo.enSuelo = false;
+            }
+        }
+
+        function alternarPausa() {
+            if (!juegoActivo && !estaPausado) return; // No pausar si está en game over o victoria
+
+            estaPausado = !estaPausado;
+            const pantallaPausa = document.getElementById("pantalla-pausa");
+            const btnPausa = document.getElementById("btn-pausa");
+
+            if (estaPausado) {
+                pantallaPausa.classList.remove("hidden");
+                btnPausa.innerText = "▶ Reanudar";
+                musica.pause();
+            } else {
+                pantallaPausa.classList.add("hidden");
+                btnPausa.innerText = "⏸ Pausa";
+                musica.play().catch(e => console.log("Audio play prevented:", e));
+                loop();
             }
         }
 
@@ -176,8 +233,16 @@
             contadorFrames = 0;
 
             juegoActivo = true;
+            estaPausado = false;
+            document.getElementById("pantalla-pausa").classList.add("hidden");
             document.getElementById("pantalla-derrota").classList.add("hidden");
             document.getElementById("pantalla-victoria").classList.add("hidden");
+            document.getElementById("btn-pausa").innerText = "⏸ Pausa";
+
+            // Intentar reproducir música al iniciar el nivel
+            musica.volume = 0.4; // Volumen agradable (40%)
+            musica.play().catch(e => console.log("El navegador requiere interacción para reproducir audio."));
+            
             loop();
         }
 
@@ -200,7 +265,7 @@
         }
 
         function actualizar() {
-            if (!juegoActivo) return;
+            if (!juegoActivo || estaPausado) return;
 
             tiempoCiclo += 1/60; 
 
@@ -215,7 +280,6 @@
                 conejo.enSuelo = false;
             }
 
-            // Velocidad del mundo ligeramente incrementada para que vaya más fluido y rápido
             let velocidadMundo = 3.8 + (nivel * 0.4);
             contadorFrames++;
 
@@ -240,6 +304,7 @@
 
                     if (puntos >= 100) {
                         juegoActivo = false;
+                        musica.pause();
                         if (nivel === 5) {
                             document.getElementById("titulo-victoria").innerText = "¡Completaste todos los niveles! ❤️";
                             document.getElementById("texto-victoria").innerText = "¡Eres el mejor, mi amor! ¡Vamos a los créditos!";
@@ -264,6 +329,7 @@
                     conejo.y + conejo.height > obstaculos[i].y + 15
                 ) {
                     juegoActivo = false;
+                    musica.pause();
                     document.getElementById("pantalla-derrota").classList.remove("hidden");
                     return;
                 }
@@ -315,7 +381,7 @@
         }
 
         function loop() {
-            if (!juegoActivo) return;
+            if (!juegoActivo || estaPausado) return;
             actualizar();
             dibujar();
             requestAnimationFrame(loop);
