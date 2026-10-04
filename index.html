@@ -15,44 +15,45 @@
             width: 100vw;
             display: flex;
             flex-direction: column;
-            justify-content: flex-end; /* Lo manda totalmente al fondo */
+            justify-content: space-between; /* Distribuye elementos arriba y abajo */
             align-items: center;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             color: #fff;
             text-align: center;
             box-sizing: border-box;
-            padding-bottom: 20px; /* Margen inferior seguro */
+            padding: 25px 20px;
             overflow: hidden;
             position: relative;
         }
 
-        /* --- INTRO ANIMADA INICIAL --- */
+        /* --- INTRO ANIMADA INICIAL (Fondo rosa con azul) --- */
         #intro-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: #0b0b0b;
+            background: linear-gradient(135deg, #ffb6c1, #87ceeb); /* Fondo degradado rosa con azul */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             z-index: 9999;
-            animation: desvanecerIntro 0.8s ease 2s forwards;
+            animation: desvanecerIntro 1s ease 2.2s forwards;
         }
 
         .intro-contenido {
-            font-size: 50px;
+            font-size: 55px;
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 20px;
             animation: latidoIntro 1.2s ease-in-out infinite;
+            text-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
 
         @keyframes latidoIntro {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.15); }
+            50% { transform: scale(1.12); }
         }
 
         @keyframes desvanecerIntro {
@@ -70,7 +71,7 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background-color: rgba(11, 11, 11, 0.95);
+            background: rgba(20, 20, 30, 0.92);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -87,7 +88,7 @@
         }
 
         .loading-conejo {
-            font-size: 60px;
+            font-size: 65px;
             animation: saltoConejo 0.5s infinite alternate;
             margin-bottom: 15px;
         }
@@ -119,9 +120,9 @@
 
         .corazon-flotante {
             position: absolute;
-            font-size: 22px;
+            font-size: 24px;
             animation: flotarUp 6s linear infinite;
-            opacity: 0.75;
+            opacity: 0.8;
         }
 
         @keyframes flotarUp {
@@ -129,103 +130,110 @@
                 transform: translateY(105vh) scale(0.8) rotate(0deg);
                 opacity: 0;
             }
-            20% { opacity: 0.8; }
-            80% { opacity: 0.8; }
+            20% { opacity: 0.9; }
+            80% { opacity: 0.9; }
             100% {
                 transform: translateY(-10vh) scale(1.2) rotate(360deg);
                 opacity: 0;
             }
         }
 
-        /* Bloque inferior pegado a la parte baja para no estorbar a los conejitos */
-        .bloque-inferior {
+        /* --- TÍTULO ARRIBA PARA NO ESTORBAR --- */
+        .titulo-superior {
             position: relative;
             z-index: 2;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 5px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 12px 20px;
-            border-radius: 20px;
-            backdrop-filter: blur(6px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.6);
+            margin-top: 5px;
         }
 
         h1 {
-            font-size: 32px;
+            font-size: 42px;
             margin: 0;
             font-weight: 800;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
             color: #ffffff;
-            text-shadow: 0 3px 12px rgba(255, 105, 180, 0.7), 0 0 25px rgba(30, 144, 255, 0.5);
+            text-shadow: 0 3px 15px rgba(255, 105, 180, 0.9), 0 0 30px rgba(30, 144, 255, 0.7);
             animation: latidoTitulo 2s ease-in-out infinite;
         }
 
         @keyframes latidoTitulo {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.03); }
+            50% { transform: scale(1.04); }
+        }
+
+        /* --- MENÚ INFERIOR BONITO Y LIMPIO --- */
+        .menu-inferior {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 15px;
+            background: rgba(255, 255, 255, 0.15); /* Panel translúcido limpio y estético */
+            padding: 18px 30px;
+            border-radius: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
         }
 
         .btn-container {
             display: flex;
-            gap: 10px;
+            gap: 15px;
             justify-content: center;
             flex-wrap: wrap;
         }
 
         .btn {
-            background-color: rgba(255, 182, 193, 0.3);
+            background-color: rgba(255, 105, 180, 0.4);
             color: #fff;
-            padding: 8px 18px;
-            font-size: 14px;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            border-radius: 20px;
+            padding: 11px 24px;
+            font-size: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            border-radius: 25px;
             cursor: pointer;
             text-decoration: none;
-            font-weight: 600;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+            font-weight: 700;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
 
         .btn:hover {
-            background-color: rgba(255, 105, 180, 0.7);
-            border-color: #ff69b4;
-            transform: scale(1.05);
-            box-shadow: 0 5px 12px rgba(255, 105, 180, 0.5);
+            background-color: rgba(255, 105, 180, 0.8);
+            border-color: #fff;
+            transform: scale(1.06);
+            box-shadow: 0 6px 18px rgba(255, 105, 180, 0.6);
         }
 
         .btn-creditos {
-            background-color: rgba(221, 160, 221, 0.3);
+            background-color: rgba(135, 206, 235, 0.4);
         }
 
         .btn-creditos:hover {
-            background-color: rgba(186, 85, 211, 0.7);
-            border-color: #dda0dd;
+            background-color: rgba(135, 206, 235, 0.8);
         }
 
         .musica-control {
-            background: rgba(255, 255, 255, 0.15);
-            border: 1px solid rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             color: #fff;
-            padding: 4px 12px;
-            border-radius: 15px;
-            font-size: 12px;
+            padding: 6px 18px;
+            border-radius: 18px;
+            font-size: 13px;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.3s;
         }
 
         .musica-control:hover {
-            background: rgba(255, 105, 180, 0.5);
+            background: rgba(255, 105, 180, 0.6);
         }
     </style>
 </head>
 <body>
 
-    <!-- Intro Animada Inicial (Dos conejitos + corazón rosa y azul) -->
+    <!-- Intro Animada Inicial (Fondo rosa con azul y conejitos uniendo corazones) -->
     <div id="intro-overlay">
         <div class="intro-contenido">
             <span>🐰</span>
@@ -248,10 +256,13 @@
         <source src="musica.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Bloque inferior compacto y abajo para no invadir -->
-    <div class="bloque-inferior">
+    <!-- Título colocado arriba de forma limpia -->
+    <div class="titulo-superior">
         <h1>I bunny you!</h1>
+    </div>
 
+    <!-- Menú inferior elegante, con botones lindos y sin tapar a los conejitos -->
+    <div class="menu-inferior">
         <div class="btn-container">
             <a href="#" class="btn" onclick="iniciarCarga(event, 'juego.html')">Comenzar Aventura 🤍</a>
             <a href="creditos.html" class="btn btn-creditos">Créditos ✨</a>
@@ -272,7 +283,7 @@
             
             corazon.style.left = Math.random() * 100 + "vw";
             corazon.style.animationDuration = (Math.random() * 3 + 4) + "s";
-            corazon.style.fontSize = (Math.random() * 14 + 16) + "px";
+            corazon.style.fontSize = (Math.random() * 14 + 18) + "px";
 
             contenedor.appendChild(corazon);
 
@@ -281,7 +292,7 @@
             }, 7000);
         }
 
-        setInterval(crearCorazonFondo, 450);
+        setInterval(crearCorazonFondon, 400);
 
         // Función de carga Kawaii al hacer clic en Comenzar Aventura
         function iniciarCarga(event, destino) {
