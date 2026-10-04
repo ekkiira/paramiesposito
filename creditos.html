@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créditos - I bunny you</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #0d0d0d;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+            color: white;
+            text-align: center;
+        }
+        .credits-container {
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            height: 450px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .slide {
+            position: absolute;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .slide.active {
+            opacity: 1;
+        }
+        img {
+            width: 280px;
+            height: 280px;
+            object-fit: cover;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(255,182,193,0.4);
+            margin-bottom: 20px;
+            border: 3px solid #ffb6c1;
+        }
+        h2 {
+            font-size: 26px;
+            color: #ffb6c1;
+            margin: 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
+        }
+        .coming-soon {
+            font-size: 42px;
+            font-weight: bold;
+            color: #ff69b4;
+            text-shadow: 3px 3px 10px rgba(0,0,0,0.9);
+            animation: bounce 1.5s infinite alternate;
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+        .btn-volver {
+            margin-top: 30px;
+            background-color: #ffb6c1;
+            color: white;
+            padding: 12px 25px;
+            font-size: 16px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="credits-container">
+        <!-- Diapositiva 1: Reencuentro -->
+        <div class="slide active">
+            <img src="reencuentro.jpg" alt="Reencuentro">
+            <h2>Nuestro Reencuentro 🤍</h2>
+        </div>
+
+        <!-- Diapositiva 2: Imagen créditos 1 -->
+        <div class="slide">
+            <img src="imagencreditos1.jpg" alt="Créditos 1">
+            <h2>Momentos inolvidables</h2>
+        </div>
+
+        <!-- Diapositiva 3: Imagen créditos 2 -->
+        <div class="slide">
+            <img src="imagencreditos2.jpg" alt="Créditos 2">
+            <h2>Risas y complicidad</h2>
+        </div>
+
+        <!-- Diapositiva 4: Imagen créditos 3 -->
+        <div class="slide">
+            <img src="imagencreditos3.jpg" alt="Créditos 3">
+            <h2>Por muchas aventuras más</h2>
+        </div>
+
+        <!-- Diapositiva 5: Coming Soon y botón de salida -->
+        <div class="slide">
+            <div class="coming-soon">Coming Soon... ✨</div>
+            <p style="margin-top: 15px; font-size: 18px;">Nuestra historia continúa</p>
+            <a href="index.html" class="btn-volver">Volver al inicio 🏠</a>
+        </div>
+    </div>
+
+    <script>
+        let slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+
+        function mostrarSiguienteSlide() {
+            slides[currentSlide].classList.remove('active');
+            currentSlide++;
+            if (currentSlide < slides.length) {
+                slides[currentSlide].classList.add('active');
+                setTimeout(mostrarSiguienteSlide, 3500); // Cambia de imagen cada 3.5 segundos
+            }
+        }
+
+        // Iniciar secuencia de créditos después de 3.5 segundos en la primera
+        setTimeout(mostrarSiguienteSlide, 3500);
+    </script>
+</body>
+</html>
